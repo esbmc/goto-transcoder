@@ -123,6 +123,40 @@ mod esbmcfixes {
         return String::from(name);
     }
 
+    pub fn function_call(name: &str, args: &Vec<Irept>, signature: &Irept) -> Irept {
+        let mut res = Irept::from("code");
+        res.named_subt
+            .insert("statement".to_string(), Irept::from("function_call"));
+
+        let mut operands = Irept::default();
+
+        // LHS
+        operands.subt.push(Irept::from("nil"));
+
+        // FUNCTION
+        let mut symbol = Irept::from("symbol");
+        symbol
+            .named_subt
+            .insert("identifier".to_string(), Irept::from(name));
+        symbol
+            .named_subt
+            .insert("name".to_string(), Irept::from(name));
+
+        operands.subt.push(symbol);
+        // ARGS
+        let mut arguments = Irept::from("arguments");
+        for i in args {
+            arguments.subt.push(i.clone());
+        }
+
+        operands.subt.push(arguments);
+
+        // Add operands
+        res.named_subt.insert("operands".to_string(), operands);
+
+        res
+    }
+
     pub fn fix_expression(irep: &mut Irept) {
         if irep.id == "side_effect" {
             irep.id = "sideeffect".to_string();
@@ -750,9 +784,9 @@ mod tests {
         assert_eq!(status, output.status.code().unwrap());
     }
 
+    use crate::ByteWriter;
     use crate::cbmc;
     use crate::cbmc2esbmc;
-    use crate::ByteWriter;
 
     fn run_test(input_c: &str, args: &[&str], expected: i32) {
         let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
