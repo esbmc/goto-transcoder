@@ -210,6 +210,7 @@ mod esbmcfixes {
                 "bitand",
                 "struct",
                 "return",
+                "r_ok"
             ]
             .map(|x| x.to_string()),
         );
