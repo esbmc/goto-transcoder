@@ -9,10 +9,10 @@ use crate::esbmc::ESBMCParseResult;
 use crate::irep::Irept;
 use log::trace;
 
-pub fn cbmc2esbmc(entrypoint: &str, input: &str, output: &str) {
+pub fn cbmc2esbmc(input: &str, output: &str) {
     trace!("cbmc2esbmc mode, {} {}", input, output);
 
-    let result = crate::cbmc::process_cbmc_file(input, entrypoint);
+    let result = crate::cbmc::process_cbmc_file(input);
     std::fs::remove_file(output).ok();
 
     let converted = ESBMCParseResult::from(result);
@@ -22,7 +22,7 @@ pub fn cbmc2esbmc(entrypoint: &str, input: &str, output: &str) {
 }
 
 trait IrepAdapter {
-    fn to_esbmc_irep(self, entrypoint: &str) -> Irept;
+    fn to_esbmc_irep(self) -> Irept;
 }
 
 pub fn irep_contains(irep: &Irept, id: &str) -> bool {
@@ -57,7 +57,6 @@ impl From<CBMCParseResult> for ESBMCParseResult {
             symbols_irep: Vec::with_capacity(data.symbols_irep.len()),
             functions_irep: Vec::with_capacity(data.functions_irep.len()),
         };
-        let entrypoint = &data.entrypoint;
 
         // First, we need to walk through the symbols and map all the
         // ref-types into concrete types
@@ -70,7 +69,6 @@ impl From<CBMCParseResult> for ESBMCParseResult {
                 sym.stype.fix_type(&type_cache);
                 type_cache.insert(tagname, sym.stype.clone());
             }
-            adapted.symbols_irep.push(sym.to_esbmc_irep(entrypoint));
         }
 
         // A symbol might have been defined later, we need to check everything again
@@ -103,8 +101,8 @@ impl From<CBMCParseResult> for ESBMCParseResult {
                 }
             }
 
-            let function_name = esbmcfixes::fix_name(&foo.name, entrypoint);
-            let mut function_irep = foo.to_esbmc_irep(entrypoint);
+            let function_name = esbmcfixes::fix_name(&foo.name);
+            let mut function_irep = foo.to_esbmc_irep();
             function_irep.fix_type(&type_cache);
             adapted.functions_irep.push((function_name, function_irep));
         }
@@ -116,10 +114,7 @@ impl From<CBMCParseResult> for ESBMCParseResult {
 mod esbmcfixes {
     use super::HashSet;
     use super::Irept;
-    pub fn fix_name(name: &str, entry: &str) -> String {
-        if name == entry {
-            return "__ESBMC_main".to_string();
-        }
+    pub fn fix_name(name: &str) -> String {
         return String::from(name);
     }
 
@@ -210,7 +205,7 @@ mod esbmcfixes {
                 "bitand",
                 "struct",
                 "return",
-                "r_ok"
+                "r_ok",
             ]
             .map(|x| x.to_string()),
         );
@@ -248,7 +243,7 @@ mod esbmcfixes {
 }
 
 impl IrepAdapter for CBMCInstruction {
-    fn to_esbmc_irep(self, entrypoint: &str) -> Irept {
+    fn to_esbmc_irep(self) -> Irept {
         let mut result = Irept::default();
         assert_ne!(self.instr_type, 19);
 
@@ -301,11 +296,11 @@ impl IrepAdapter for CBMCInstruction {
 }
 
 impl IrepAdapter for CBMCFunction {
-    fn to_esbmc_irep(self, entrypoint: &str) -> Irept {
+    fn to_esbmc_irep(self) -> Irept {
         let mut result = Irept::from("goto-program");
         for instr in self.instructions {
             if instr.code.id == "nil" || instr.code.named_subt["statement"].id != "output" {
-                result.subt.push(instr.to_esbmc_irep(entrypoint));
+                result.subt.push(instr.to_esbmc_irep());
             }
         }
         result
@@ -313,7 +308,7 @@ impl IrepAdapter for CBMCFunction {
 }
 
 impl IrepAdapter for CBMCSymbol {
-    fn to_esbmc_irep(self, entrypoint: &str) -> Irept {
+    fn to_esbmc_irep(self) -> Irept {
         let mut result = Irept::default();
         result.named_subt.insert("type".to_string(), self.stype);
         result.named_subt.insert("symvalue".to_string(), self.value);
@@ -330,8 +325,8 @@ impl IrepAdapter for CBMCSymbol {
             .named_subt
             .insert("mode".to_string(), Irept::from(&self.mode));
 
-        let name = esbmcfixes::fix_name(self.name.as_str(), entrypoint);
-        let basename = esbmcfixes::fix_name(self.base_name.as_str(), entrypoint);
+        let name = esbmcfixes::fix_name(self.name.as_str());
+        let basename = esbmcfixes::fix_name(self.base_name.as_str());
 
         assert_ne!(basename, "num::verify::checked_unchecked_add_i8");
 
@@ -765,6 +760,8 @@ mod tests {
             Err(err) => panic!("Could not get ESBMC bin. {}", err),
         };
         let output = Command::new(esbmc)
+            .arg("--function")
+            .arg("__CPROVER__start")
             .arg("--binary")
             .arg(input_gbf)
             .args(args)
@@ -785,9 +782,9 @@ mod tests {
         assert_eq!(status, output.status.code().unwrap());
     }
 
-    use crate::ByteWriter;
     use crate::cbmc;
     use crate::cbmc2esbmc;
+    use crate::ByteWriter;
 
     fn run_test(input_c: &str, args: &[&str], expected: i32) {
         let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
@@ -800,8 +797,7 @@ mod tests {
         let esbmc_gbf = format!("{}.esbmc.goto", input_c);
 
         generate_cbmc_gbf(test_path.to_str().unwrap(), cbmc_gbf.as_str());
-
-        cbmc2esbmc("__CPROVER__start", cbmc_gbf.as_str(), esbmc_gbf.as_str());
+        cbmc2esbmc(cbmc_gbf.as_str(), esbmc_gbf.as_str());
         run_esbmc_gbf(&esbmc_gbf, args, expected);
         std::fs::remove_file(&cbmc_gbf).ok();
         std::fs::remove_file(&esbmc_gbf).ok();
@@ -816,11 +812,7 @@ mod tests {
             std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_goto));
 
         let esbmc_gbf = format!("{}.goto", input_goto); // TODO: generate UUID!
-        cbmc2esbmc(
-            "__CPROVER__start",
-            test_path.to_str().unwrap(),
-            esbmc_gbf.as_str(),
-        );
+        cbmc2esbmc(test_path.to_str().unwrap(), esbmc_gbf.as_str());
         run_esbmc_gbf(&esbmc_gbf, args, expected);
         std::fs::remove_file(&esbmc_gbf).ok();
     }

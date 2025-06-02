@@ -100,15 +100,13 @@ pub struct CBMCParseResult {
     pub reader: ByteReader,
     pub symbols_irep: Vec<CBMCSymbol>,
     pub functions_irep: Vec<CBMCFunction>,
-    pub entrypoint: String,
 }
 
-pub fn process_cbmc_file(path: &str, entrypoint: &str) -> CBMCParseResult {
+pub fn process_cbmc_file(path: &str) -> CBMCParseResult {
     let mut result = CBMCParseResult {
         reader: ByteReader::read_file(path),
         functions_irep: Vec::new(),
         symbols_irep: Vec::new(),
-        entrypoint: String::from(entrypoint),
     };
 
     result.reader.check_cbmc_header().unwrap();
@@ -234,6 +232,6 @@ mod tests {
         let test_path = std::path::Path::new(&cargo_dir).join("resources/test/hello-gb.goto");
         assert!(test_path.exists());
 
-        crate::cbmc::process_cbmc_file(test_path.to_str().unwrap(), "__CPROVER__start");
+        crate::cbmc::process_cbmc_file(test_path.to_str().unwrap());
     }
 }
