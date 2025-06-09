@@ -754,7 +754,13 @@ mod tests {
         }
     }
 
-    fn run_esbmc_gbf(input_gbf: &str, args: &[&str], status: i32, library_gbf: &str) {
+    fn run_esbmc_gbf(
+        input_gbf: &str,
+        args: &[&str],
+        status: i32,
+        library_gbf: &str,
+        entrypoint: &str,
+    ) {
         let esbmc = match std::env::var("ESBMC") {
             Ok(v) => v,
             Err(err) => panic!("Could not get ESBMC bin. {}", err),
@@ -762,7 +768,7 @@ mod tests {
         let output = Command::new(esbmc)
             .arg("--cprover")
             .arg("--function")
-            .arg("main")
+            .arg(entrypoint)
             .arg("--binary")
             .arg("/home/rafaelsa/repos/goto-transcoder/resources/library.goto")
             .arg(input_gbf)
@@ -803,7 +809,13 @@ mod tests {
         generate_cbmc_gbf(test_path.to_str().unwrap(), cbmc_gbf.as_str());
         cbmc2esbmc(cbmc_gbf.as_str(), esbmc_gbf.as_str());
         let library_path = std::path::Path::new(&cargo_dir).join("resources/library.goto");
-        run_esbmc_gbf(&esbmc_gbf, args, expected, library_path.to_str().unwrap());
+        run_esbmc_gbf(
+            &esbmc_gbf,
+            args,
+            expected,
+            library_path.to_str().unwrap(),
+            "main",
+        );
         std::fs::remove_file(&cbmc_gbf).ok();
         std::fs::remove_file(&esbmc_gbf).ok();
     }
@@ -819,7 +831,35 @@ mod tests {
         let esbmc_gbf = format!("{}.goto", input_goto); // TODO: generate UUID!
         cbmc2esbmc(test_path.to_str().unwrap(), esbmc_gbf.as_str());
         let library_path = std::path::Path::new(&cargo_dir).join("resources/library.goto");
-        run_esbmc_gbf(&esbmc_gbf, args, expected, library_path.to_str().unwrap());
+        run_esbmc_gbf(
+            &esbmc_gbf,
+            args,
+            expected,
+            library_path.to_str().unwrap(),
+            "__CPROVER__start",
+        );
+
+        std::fs::remove_file(&esbmc_gbf).ok();
+    }
+
+    fn run_goto_test_2(input_goto: &str, args: &[&str], expected: i32, entrypoint: &str) {
+        let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
+            Ok(v) => v,
+            Err(err) => panic!("Could not open cargo folder. {}", err),
+        };
+        let test_path =
+            std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_goto));
+
+        let esbmc_gbf = format!("{}.goto", input_goto); // TODO: generate UUID!
+        cbmc2esbmc(test_path.to_str().unwrap(), esbmc_gbf.as_str());
+        let library_path = std::path::Path::new(&cargo_dir).join("resources/library.goto");
+        run_esbmc_gbf(
+            &esbmc_gbf,
+            args,
+            expected,
+            library_path.to_str().unwrap(),
+            entrypoint,
+        );
 
         std::fs::remove_file(&esbmc_gbf).ok();
     }
@@ -948,40 +988,41 @@ mod tests {
         run_test("struct_array_fail.c", &["--incremental-bmc"], 1);
     }
 
-    // #[test]
-    // #[ignore]
-    // fn goto_test() {
-    //     run_goto_test("mul.goto", &["--goto-functions-only"], 0);
-    // }
+    #[test]
+    #[ignore]
+    fn goto_test() {
+        run_goto_test("mul.goto", &["--goto-functions-only"], 0);
+    }
 
     //     ////////////////
     //     // KANI TESTS //
     //     ////////////////
     //     // TODO: Integrate Kani into the test framework
 
-    //     #[test]
-    //     #[ignore]
-    //     fn hello_rust_book() {
-    //         run_goto_test("hello_world.rs.goto", &["--goto-functions-only"], 0);
-    //         run_goto_test("hello_world.rs.goto", &["--incremental-bmc"], 1);
-    //     }
+    #[test]
+    #[ignore]
+    fn hello_rust_book() {
+        run_goto_test("hello_world.rs.goto", &["--goto-functions-only"], 0);
+        run_goto_test("hello_world.rs.goto", &["--incremental-bmc"], 1);
+    }
 
-    //     #[test]
-    //     #[ignore]
-    //     fn first_steps_book() {
-    //         run_goto_test("first_steps.rs.goto", &["--goto-functions-only"], 0);
-    //         run_goto_test("first_steps.rs.goto", &["--incremental-bmc"], 1);
-    //         run_goto_test("first-steps-pass.goto", &["--incremental-bmc"], 0);
-    //     }
+    #[test]
+    #[ignore]
+    fn first_steps_book() {
+        run_goto_test("first_steps.rs.goto", &["--goto-functions-only"], 0);
+        run_goto_test("first_steps.rs.goto", &["--incremental-bmc"], 1);
+        run_goto_test("first-steps-pass.goto", &["--incremental-bmc"], 0);
+    }
 
-    //     #[test]
-    //     #[ignore]
-    //     fn unchecked_add_contract() {
-    //         // Disabled because ESBMC does not support: object_size, overflow_result-+
-    //         run_goto_test(
-    //             "checked_unchecked_add_i8.goto",
-    //             &["--goto-functions-only"],
-    //             0,
-    //         );
-    //     }
+    #[test]
+    #[ignore]
+    fn unchecked_add_contract() {
+        // Disabled because ESBMC does not support: object_size, overflow_result-+
+        run_goto_test_2(
+            "checked_unchecked_add_i8.goto",
+            &["--goto-functions-only"],
+            0,
+            "_RNvNtNtCsesPP5EAma4_4core3num6verify24checked_unchecked_add_i8",
+        );
+    }
 }
