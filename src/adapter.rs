@@ -16,7 +16,6 @@ pub fn cbmc2esbmc(input: &str, output: &str) {
     std::fs::remove_file(output).ok();
 
     let converted = ESBMCParseResult::from(result);
-    //let converted = result;
     std::fs::remove_file(&output).ok();
     ByteWriter::write_to_file(converted.symbols_irep, converted.functions_irep, output);
 }
@@ -69,6 +68,7 @@ impl From<CBMCParseResult> for ESBMCParseResult {
                 sym.stype.fix_type(&type_cache);
                 type_cache.insert(tagname, sym.stype.clone());
             }
+            adapted.symbols_irep.push(sym.to_esbmc_irep());
         }
 
         // A symbol might have been defined later, we need to check everything again
@@ -754,15 +754,17 @@ mod tests {
         }
     }
 
-    fn run_esbmc_gbf(input_gbf: &str, args: &[&str], status: i32) {
+    fn run_esbmc_gbf(input_gbf: &str, args: &[&str], status: i32, library_gbf: &str) {
         let esbmc = match std::env::var("ESBMC") {
             Ok(v) => v,
             Err(err) => panic!("Could not get ESBMC bin. {}", err),
         };
         let output = Command::new(esbmc)
+            .arg("--cprover")
             .arg("--function")
-            .arg("__CPROVER__start")
+            .arg("main")
             .arg("--binary")
+            .arg("/home/rafaelsa/repos/goto-transcoder/resources/library.goto")
             .arg(input_gbf)
             .args(args)
             .output()
@@ -778,6 +780,7 @@ mod tests {
                 "\tSTDERR: {}",
                 String::from_utf8_lossy(&output.stderr).to_string()
             );
+            println!("\t[{}, {}]", library_gbf, input_gbf)
         }
         assert_eq!(status, output.status.code().unwrap());
     }
@@ -793,12 +796,14 @@ mod tests {
         };
         let test_path =
             std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_c));
+
         let cbmc_gbf = format!("{}.cbmc.goto", input_c);
         let esbmc_gbf = format!("{}.esbmc.goto", input_c);
 
         generate_cbmc_gbf(test_path.to_str().unwrap(), cbmc_gbf.as_str());
         cbmc2esbmc(cbmc_gbf.as_str(), esbmc_gbf.as_str());
-        run_esbmc_gbf(&esbmc_gbf, args, expected);
+        let library_path = std::path::Path::new(&cargo_dir).join("resources/library.goto");
+        run_esbmc_gbf(&esbmc_gbf, args, expected, library_path.to_str().unwrap());
         std::fs::remove_file(&cbmc_gbf).ok();
         std::fs::remove_file(&esbmc_gbf).ok();
     }
@@ -813,7 +818,9 @@ mod tests {
 
         let esbmc_gbf = format!("{}.goto", input_goto); // TODO: generate UUID!
         cbmc2esbmc(test_path.to_str().unwrap(), esbmc_gbf.as_str());
-        run_esbmc_gbf(&esbmc_gbf, args, expected);
+        let library_path = std::path::Path::new(&cargo_dir).join("resources/library.goto");
+        run_esbmc_gbf(&esbmc_gbf, args, expected, library_path.to_str().unwrap());
+
         std::fs::remove_file(&esbmc_gbf).ok();
     }
 
@@ -941,40 +948,40 @@ mod tests {
         run_test("struct_array_fail.c", &["--incremental-bmc"], 1);
     }
 
-    #[test]
-    #[ignore]
-    fn goto_test() {
-        run_goto_test("mul.goto", &["--goto-functions-only"], 0);
-    }
+    // #[test]
+    // #[ignore]
+    // fn goto_test() {
+    //     run_goto_test("mul.goto", &["--goto-functions-only"], 0);
+    // }
 
-    ////////////////
-    // KANI TESTS //
-    ////////////////
-    // TODO: Integrate Kani into the test framework
+    //     ////////////////
+    //     // KANI TESTS //
+    //     ////////////////
+    //     // TODO: Integrate Kani into the test framework
 
-    #[test]
-    #[ignore]
-    fn hello_rust_book() {
-        run_goto_test("hello_world.rs.goto", &["--goto-functions-only"], 0);
-        run_goto_test("hello_world.rs.goto", &["--incremental-bmc"], 1);
-    }
+    //     #[test]
+    //     #[ignore]
+    //     fn hello_rust_book() {
+    //         run_goto_test("hello_world.rs.goto", &["--goto-functions-only"], 0);
+    //         run_goto_test("hello_world.rs.goto", &["--incremental-bmc"], 1);
+    //     }
 
-    #[test]
-    #[ignore]
-    fn first_steps_book() {
-        run_goto_test("first_steps.rs.goto", &["--goto-functions-only"], 0);
-        run_goto_test("first_steps.rs.goto", &["--incremental-bmc"], 1);
-        run_goto_test("first-steps-pass.goto", &["--incremental-bmc"], 0);
-    }
+    //     #[test]
+    //     #[ignore]
+    //     fn first_steps_book() {
+    //         run_goto_test("first_steps.rs.goto", &["--goto-functions-only"], 0);
+    //         run_goto_test("first_steps.rs.goto", &["--incremental-bmc"], 1);
+    //         run_goto_test("first-steps-pass.goto", &["--incremental-bmc"], 0);
+    //     }
 
-    #[test]
-    #[ignore]
-    fn unchecked_add_contract() {
-        // Disabled because ESBMC does not support: object_size, overflow_result-+
-        // run_goto_test(
-        // "checked_unchecked_add_i8.goto",
-        // &["--goto-functions-only"],
-        // 0,
-        // );
-    }
+    //     #[test]
+    //     #[ignore]
+    //     fn unchecked_add_contract() {
+    //         // Disabled because ESBMC does not support: object_size, overflow_result-+
+    //         run_goto_test(
+    //             "checked_unchecked_add_i8.goto",
+    //             &["--goto-functions-only"],
+    //             0,
+    //         );
+    //     }
 }

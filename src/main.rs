@@ -19,7 +19,7 @@ use clap::{Args, Parser, Subcommand};
 fn init() {
     use env_logger::Env;
     let env = Env::default()
-        .filter_or("LOG_LEVEL", "info")
+        .filter_or("LOG_LEVEL", "trace")
         .write_style_or("LOG_STYLE", "always");
 
     env_logger::init_from_env(env);
@@ -37,16 +37,6 @@ struct Cli {
 enum Commands {
     /// Converts CBMC <INPUT> into ESBMC <OUTPUT>
     CBMC2ESBMC(CmdArgs),
-    /// Converts CBMC <INPUT> into JSON <OUTPUT>
-    CBMC2JSON(CmdArgs),
-    /// Converts ESBMC <INPUT> into CBMC <OUTPUT>
-    ESBMC2CBMC(CmdArgs),
-    /// Converts ESBMC <INPUT> into JSON <OUTPUT>
-    ESBMC2JSON(CmdArgs),
-    /// Converts JSON <INPUT> into CBMC <OUTPUT>
-    JSON2CBMC(CmdArgs),
-    /// Converts JSON <INPUT> into ESBMC <OUTPUT>
-    JSON2ESBMC(CmdArgs),
 }
 
 #[derive(Args)]
