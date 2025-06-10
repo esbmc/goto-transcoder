@@ -761,6 +761,12 @@ mod tests {
         library_gbf: &str,
         entrypoint: &str,
     ) {
+        let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
+            Ok(v) => v,
+            Err(err) => panic!("Could not open cargo folder. {}", err),
+        };
+        let library_path =
+            std::path::Path::new(&cargo_dir).join(format!("resources/{}", "library.goto"));
         let esbmc = match std::env::var("ESBMC") {
             Ok(v) => v,
             Err(err) => panic!("Could not get ESBMC bin. {}", err),
@@ -770,7 +776,7 @@ mod tests {
             .arg("--function")
             .arg(entrypoint)
             .arg("--binary")
-            .arg("/home/rafaelsa/repos/goto-transcoder/resources/library.goto")
+            .arg(library_path)
             .arg(input_gbf)
             .args(args)
             .output()
