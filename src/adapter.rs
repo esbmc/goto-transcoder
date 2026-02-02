@@ -203,6 +203,7 @@ mod esbmcfixes {
                 "dereference",
                 "object_size",
                 "bitand",
+                "bitor",
                 "struct",
                 "return",
                 "r_ok",
