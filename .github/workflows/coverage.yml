@@ -1,4 +1,4 @@
-name: Rust
+name: Coverage
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  coverage:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -23,9 +23,9 @@ jobs:
           ~/.cargo/registry/cache
           ~/.cargo/git/db
           target
-        key: cargo-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
+        key: cargo-coverage-${{ runner.os }}-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: |
-          cargo-${{ runner.os }}-
+          cargo-coverage-${{ runner.os }}-
 
     - name: Cache CBMC deb
       id: cache-cbmc
@@ -59,8 +59,17 @@ jobs:
     - name: Install ESBMC
       run: unzip -o ~/esbmc-cache/esbmc-linux.zip && chmod +x ./bin/esbmc && ./bin/esbmc --version
 
-    - name: Build
-      run: cargo build --verbose
+    - name: Install cargo-tarpaulin
+      run: cargo install cargo-tarpaulin
 
-    - name: Test
-      run: GOTO_CC=goto-cc ESBMC=$PWD/bin/esbmc cargo test -- --ignored
+    - name: Run coverage
+      run: cargo tarpaulin --out xml --output-dir coverage -- --include-ignored
+      env:
+        GOTO_CC: goto-cc
+        ESBMC: ${{ github.workspace }}/bin/esbmc
+
+    - name: Upload to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: coverage/cobertura.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
