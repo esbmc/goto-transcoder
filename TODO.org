@@ -1,0 +1,40 @@
+#+TITLE: GOTO Transcoder - Issue Tracker
+#+TODO: TODO IN-PROGRESS | DONE CANCELLED
+#+TAGS: bug(b) feature(f) refactor(r) ci(c)
+#+PRIORITIES: A B C
+
+* TODO [#B] Types of union_tag should should be expanded
+:PROPERTIES:
+:CUSTOM_ID: 1
+:CREATED: [2026-02-23 Mon 17:27]
+:END:
+The contract _RNvNtNtCse4K9yuySQJR_4core3num6verify15widening_mul_u8.out is currently crashing in ESBMC due to the unsupported union.
+
+* TODO [#B] #[ignore] used for the wrong reason                   :refactor:
+:PROPERTIES:
+:CUSTOM_ID: 2
+:CREATED: [2026-02-23 Mon]
+:END:
+In adapter.rs, all tests are marked with ~#[ignore]~ because they require external tools (goto-cc, esbmc). This attribute should only indicate broken tests. Instead, gracefully skip tests at runtime when dependencies aren't available:
+#+begin_src rust
+let Ok(goto_cc) = std::env::var("GOTO_CC") else {
+    eprintln!("Skipping: GOTO_CC not set");
+    return;
+};
+#+end_src
+
+* TODO [#B] Tests with no assertions                              :refactor:
+:PROPERTIES:
+:CUSTOM_ID: 3
+:CREATED: [2026-02-23 Mon]
+:END:
+- ~esbmc.rs::test_file()~ reads a file, writes it to /tmp/test.goto and stops. No assertion — only verifies the code doesn't panic.
+- ~cbmc.rs::test_cbmc_to_esbmc_file()~ asserts the test file exists and calls the parser without validating results.
+Implement roundtrip testing: read, write, and re-read data to validate correctness by comparing original and roundtripped structures.
+
+* TODO [#C] Move tests into tests/                                :refactor:
+:PROPERTIES:
+:CUSTOM_ID: 4
+:CREATED: [2026-02-23 Mon]
+:END:
+Currently adapter.rs has ~300 lines of integration test helpers mixed in with production code. Move them into a dedicated tests/ directory.

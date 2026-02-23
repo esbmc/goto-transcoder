@@ -15,6 +15,7 @@ Check the [wiki](https://github.com/esbmc/goto-transcoder/wiki/Steps-to-verify-R
 
 - [Architecture](docs/Architecture.md)
 - [Development](docs/Development.md)
+- New issues should be reported as a PR adding an entry to [TODO.org](TODO.org).
 
 ## Roadmap
 
