@@ -1,0 +1,34 @@
+name: Integration Test (verify-rust-std)
+
+on:
+  pull_request:
+    branches: [ main ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  verify-contracts:
+    name: Verify contracts with goto-transcoder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout verify-rust-std
+        uses: actions/checkout@v4
+        with:
+          repository: model-checking/verify-rust-std
+          submodules: true
+
+      - name: Patch transcoder script to use PR branch
+        env:
+          PR_REPO_URL: ${{ github.event.pull_request.head.repo.clone_url }}
+          PR_BRANCH: ${{ github.head_ref }}
+        run: |
+          sed -i "s|goto_transcoder_git=https://github.com/esbmc/goto-transcoder|goto_transcoder_git=${PR_REPO_URL}|" scripts/run-goto-transcoder.sh
+          sed -i "s|git clone \$goto_transcoder_git|git clone -b ${PR_BRANCH} \$goto_transcoder_git|" scripts/run-goto-transcoder.sh
+
+      - name: Generate contracts
+        run: ./scripts/run-kani.sh --kani-args --keep-temps --only-codegen --target-dir kani/contracts
+
+      - name: Run goto-transcoder
+        run: ./scripts/run-goto-transcoder.sh kani/contracts checked_unchecked.*.out
