@@ -1,4 +1,4 @@
-pub use crate::Irept;
+use crate::irep::Irept;
 use log::debug;
 use log::trace;
 use std::collections::HashMap;
@@ -38,8 +38,8 @@ impl ByteWriter {
             writer.write_reference(&irep);
         }
 
-        let mut file = std::fs::File::create(output).unwrap();
-        file.write_all(&writer.file).unwrap();
+        let mut file = std::fs::File::create(output).expect("failed to create output file");
+        file.write_all(&writer.file).expect("failed to write output file");
     }
 
     fn write_string(&mut self, value: &str) {
@@ -74,8 +74,7 @@ impl ByteWriter {
     }
 
     fn write_reference(&mut self, value: &Irept) {
-        if self.irep_container.contains_key(value) {
-            let id = self.irep_container[value];
+        if let Some(&id) = self.irep_container.get(value) {
             self.write_u32(id);
             return;
         }
@@ -85,8 +84,7 @@ impl ByteWriter {
         self.write_irep(value);
     }
     fn write_string_reference(&mut self, value: &str) {
-        if self.string_ref_container.contains_key(value) {
-            let id = self.string_ref_container[value];
+        if let Some(&id) = self.string_ref_container.get(value) {
             self.write_u32(id);
             return;
         }

@@ -1,6 +1,6 @@
 use crate::bytereader::ByteReader;
-use crate::ByteWriter;
-pub use crate::Irept;
+use crate::bytewriter::ByteWriter;
+use crate::irep::Irept;
 
 #[derive(Clone, Debug)]
 pub struct ESBMCParseResult {
@@ -16,8 +16,8 @@ pub fn process_esbmc_file(path: &str) -> Result<ESBMCParseResult, String> {
         symbols_irep: Vec::new(),
     };
 
-    result.reader.check_esbmc_header().unwrap();
-    result.reader.check_esbmc_version().unwrap();
+    result.reader.check_esbmc_header().expect("invalid ESBMC header — is this a .goto file?");
+    result.reader.check_esbmc_version().expect("unsupported ESBMC version");
 
     // Symbol table
     let number_of_symbols = result.reader.read_esbmc_word();
@@ -36,7 +36,7 @@ pub fn process_esbmc_file(path: &str) -> Result<ESBMCParseResult, String> {
         result.functions_irep.push(foo.clone());
     }
 
-    return Ok(result);
+    Ok(result)
 }
 
 #[cfg(test)]

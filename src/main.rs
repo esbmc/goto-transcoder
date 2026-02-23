@@ -6,11 +6,11 @@ mod esbmc;
 mod irep;
 mod resources;
 
-pub use adapter::cbmc2esbmc;
-pub use bytereader::ByteReader;
-pub use bytewriter::ByteWriter;
+use adapter::cbmc2esbmc;
+use bytereader::ByteReader;
+use bytewriter::ByteWriter;
 use esbmc::ESBMCParseResult;
-pub use irep::Irept;
+use irep::Irept;
 
 use log::trace;
 
@@ -52,7 +52,10 @@ fn main() {
 
     match cli.command {
         Commands::CBMC2ESBMC(args) => {
-            cbmc2esbmc(&args.input.to_str().unwrap(), args.output.to_str().unwrap());
+            cbmc2esbmc(
+                args.input.to_str().expect("input path is not valid UTF-8"),
+                args.output.to_str().expect("output path is not valid UTF-8"),
+            );
         }
         _ => panic!("Command not implemented yet"),
     };

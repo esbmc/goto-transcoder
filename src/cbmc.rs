@@ -1,5 +1,5 @@
 use crate::bytereader::ByteReader;
-pub use crate::Irept;
+use crate::irep::Irept;
 use log::debug;
 use log::info;
 use std::collections::HashMap;
@@ -109,8 +109,8 @@ pub fn process_cbmc_file(path: &str) -> CBMCParseResult {
         symbols_irep: Vec::new(),
     };
 
-    result.reader.check_cbmc_header().unwrap();
-    result.reader.check_cbmc_version().unwrap();
+    result.reader.check_cbmc_header().expect("invalid CBMC header — is this a .goto file?");
+    result.reader.check_cbmc_version().expect("unsupported CBMC version");
 
     // Symbol table
     let number_of_symbols = result.reader.read_cbmc_word();

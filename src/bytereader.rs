@@ -1,4 +1,4 @@
-use crate::Irept;
+use crate::irep::Irept;
 
 use log::trace;
 use std::collections::HashMap;
@@ -49,8 +49,8 @@ impl ByteReader {
     // Reference parsing. First try the cache, if not available then parse the irep
     pub fn read_esbmc_reference(&mut self) -> Irept {
         let id = self.read_esbmc_word();
-        if self.irep_container.contains_key(&id) {
-            return self.irep_container.get(&id).unwrap().clone();
+        if let Some(cached) = self.irep_container.get(&id) {
+            return cached.clone();
         }
 
         let irep_id = self.read_esbmc_string_ref();
@@ -99,8 +99,8 @@ impl ByteReader {
 
     pub fn read_cbmc_reference(&mut self) -> Irept {
         let id = self.read_cbmc_word();
-        if self.irep_container.contains_key(&id) {
-            return self.irep_container.get(&id).unwrap().clone();
+        if let Some(cached) = self.irep_container.get(&id) {
+            return cached.clone();
         }
 
         let irep_id = self.read_cbmc_string_ref();
@@ -173,8 +173,8 @@ impl ByteReader {
     pub fn read_esbmc_string_ref(&mut self) -> String {
         let id = self.read_esbmc_word();
 
-        if self.string_ref_container.contains_key(&id) {
-            return self.string_ref_container.get(&id).unwrap().clone();
+        if let Some(cached) = self.string_ref_container.get(&id) {
+            return cached.clone();
         }
 
         let value = self.read_esbmc_string();
@@ -185,8 +185,8 @@ impl ByteReader {
 
     pub fn read_cbmc_string_ref(&mut self) -> String {
         let id = self.read_cbmc_word();
-        if self.string_ref_container.contains_key(&id) {
-            return self.string_ref_container.get(&id).unwrap().clone();
+        if let Some(cached) = self.string_ref_container.get(&id) {
+            return cached.clone();
         }
         let value = self.read_gb_string();
 
@@ -226,7 +226,7 @@ impl ByteReader {
             panic!("Unexpected end of stream");
         }
 
-        return res;
+        res
     }
 
     // GBF checks
