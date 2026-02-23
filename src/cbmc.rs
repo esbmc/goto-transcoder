@@ -229,8 +229,11 @@ pub fn process_cbmc_file(path: &str) -> CBMCParseResult {
 
 #[cfg(test)]
 mod tests {
+    use crate::bytewriter::ByteWriter;
+    use crate::esbmc::{process_esbmc_file, ESBMCParseResult};
+
     #[test]
-    fn test_cbmc_to_esbmc_file() {
+    fn test_cbmc_to_esbmc_roundtrip() {
         let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
             Ok(v) => v,
             Err(err) => panic!("Could not open cargo folder. {}", err),
@@ -238,6 +241,37 @@ mod tests {
         let test_path = std::path::Path::new(&cargo_dir).join("resources/test/hello-gb.goto");
         assert!(test_path.exists());
 
-        crate::cbmc::process_cbmc_file(test_path.to_str().unwrap());
+        let cbmc_result = crate::cbmc::process_cbmc_file(test_path.to_str().unwrap());
+        assert!(!cbmc_result.symbols_irep.is_empty(), "no symbols parsed");
+        assert!(
+            !cbmc_result.functions_irep.is_empty(),
+            "no functions parsed"
+        );
+
+        let converted = ESBMCParseResult::from(cbmc_result);
+
+        let tmp_path = "/tmp/cbmc_roundtrip_test.goto";
+        std::fs::remove_file(tmp_path).ok();
+        ByteWriter::write_to_file(
+            converted.symbols_irep.clone(),
+            converted.functions_irep.clone(),
+            tmp_path,
+        );
+
+        let roundtripped = process_esbmc_file(tmp_path).unwrap();
+        std::fs::remove_file(tmp_path).ok();
+
+        assert_eq!(
+            converted.symbols_irep.len(),
+            roundtripped.symbols_irep.len(),
+            "symbol count mismatch after roundtrip"
+        );
+        assert_eq!(
+            converted.functions_irep.len(),
+            roundtripped.functions_irep.len(),
+            "function count mismatch after roundtrip"
+        );
+        assert_eq!(converted.symbols_irep, roundtripped.symbols_irep);
+        assert_eq!(converted.functions_irep, roundtripped.functions_irep);
     }
 }
