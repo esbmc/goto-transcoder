@@ -2,7 +2,6 @@
 
 use std::collections::{HashMap, HashSet};
 
-use crate::bytereader::ByteReader;
 use crate::bytewriter::ByteWriter;
 use crate::cbmc::{CBMCFunction, CBMCInstruction, CBMCParseResult, CBMCSymbol};
 use crate::esbmc::ESBMCParseResult;
@@ -16,7 +15,7 @@ pub fn cbmc2esbmc(input: &str, output: &str) {
     std::fs::remove_file(output).ok();
 
     let converted = ESBMCParseResult::from(result);
-    std::fs::remove_file(&output).ok();
+    std::fs::remove_file(output).ok();
     ByteWriter::write_to_file(converted.symbols_irep, converted.functions_irep, output);
 }
 
@@ -35,13 +34,13 @@ pub fn irep_contains(irep: &Irept, id: &str) -> bool {
         }
     }
 
-    for (_, v) in &irep.named_subt {
+    for v in irep.named_subt.values() {
         if irep_contains(v, id) {
             return true;
         }
     }
 
-    for (_, v) in &irep.comments {
+    for v in irep.comments.values() {
         if irep_contains(v, id) {
             return true;
         }
@@ -75,7 +74,7 @@ impl From<CBMCParseResult> for ESBMCParseResult {
         for symbol in &mut adapted.symbols_irep {
             symbol.fix_type(&type_cache);
             if irep_contains(symbol, "struct_tag") {
-                panic!("Tag should have been filtered for {}", symbol.to_string());
+                panic!("Tag should have been filtered for {}", symbol);
             }
 
             assert_ne!(symbol.named_subt["type"].id, "c_bool");
@@ -85,15 +84,15 @@ impl From<CBMCParseResult> for ESBMCParseResult {
         //       which is fine for most cases. But CBMC for some reason likes to
         //       start from 1 and have a target number associated to the instruction.
         //       So we first parse everything and then fix the target numbers
-        for mut foo in data.functions_irep {
+        for mut cbmc_func in data.functions_irep {
             let mut target_revmap: HashMap<u32, u32> = HashMap::new();
 
-            for (index, inst) in &mut foo.instructions.iter().enumerate() {
+            for (index, inst) in &mut cbmc_func.instructions.iter().enumerate() {
                 target_revmap.insert(inst.target_number, (index) as u32);
             }
 
             // lets fix the targets
-            for f in &mut foo.instructions {
+            for f in &mut cbmc_func.instructions {
                 for t in &mut f.targets {
                     let unsigned_value: u32 = t.id.parse().unwrap();
                     let target_fixed = target_revmap.get(&unsigned_value).unwrap().to_string();
@@ -101,8 +100,8 @@ impl From<CBMCParseResult> for ESBMCParseResult {
                 }
             }
 
-            let function_name = esbmcfixes::fix_name(&foo.name);
-            let mut function_irep = foo.to_esbmc_irep();
+            let function_name = esbmcfixes::fix_name(&cbmc_func.name);
+            let mut function_irep = cbmc_func.to_esbmc_irep();
             function_irep.fix_type(&type_cache);
             adapted.functions_irep.push((function_name, function_irep));
         }
@@ -118,7 +117,8 @@ mod esbmcfixes {
         String::from(name)
     }
 
-    pub fn function_call(name: &str, args: &Vec<Irept>, signature: &Irept) -> Irept {
+    #[allow(dead_code)]
+    pub fn function_call(name: &str, args: &[Irept], _signature: &Irept) -> Irept {
         let mut res = Irept::from("code");
         res.named_subt
             .insert("statement".to_string(), Irept::from("function_call"));
@@ -217,13 +217,15 @@ mod esbmcfixes {
         let array_has_operand = irep.id == "array"
             && irep.named_subt.contains_key("type")
             && irep.named_subt["type"].id == "array"
-            && irep.subt.len() != 0;
+            && !irep.subt.is_empty();
 
-        let is_function_call = irep.id == "arguments" && irep.subt.len() != 0;
+        let is_function_call = irep.id == "arguments" && !irep.subt.is_empty();
 
         if expressions.contains(&irep.id) || array_has_operand || is_function_call {
-            let mut operands = Irept::default();
-            operands.subt = irep.subt.clone();
+            let operands = Irept {
+                subt: irep.subt.clone(),
+                ..Default::default()
+            };
             irep.named_subt.insert("operands".to_string(), operands);
             irep.subt.clear();
         }
@@ -250,8 +252,10 @@ impl IrepAdapter for CBMCInstruction {
 
         // In ESBMC code arguments are expected to be inside the "operands"
         let mut code = self.code;
-        let mut operands = Irept::default();
-        operands.subt = code.subt.clone();
+        let operands = Irept {
+            subt: code.subt.clone(),
+            ..Default::default()
+        };
         code.subt.clear();
         code.named_subt.insert("operands".to_string(), operands);
 
@@ -270,7 +274,7 @@ impl IrepAdapter for CBMCInstruction {
         );
         result.named_subt.insert("guard".to_string(), self.guard);
 
-        if self.targets.len() != 0 {
+        if !self.targets.is_empty() {
             let mut t_ireps = Irept::default();
             for target in self.targets {
                 t_ireps.subt.push(target);
@@ -278,7 +282,7 @@ impl IrepAdapter for CBMCInstruction {
             result.named_subt.insert("targets".to_string(), t_ireps);
         }
 
-        if self.labels.len() != 0 {
+        if !self.labels.is_empty() {
             let mut l_ireps = Irept::default();
             for label in self.labels {
                 l_ireps.subt.push(Irept::from(label));
@@ -385,6 +389,7 @@ impl IrepAdapter for CBMCSymbol {
     }
 }
 
+#[allow(dead_code, clippy::boxed_local)]
 #[derive(Clone, Debug)]
 enum Component {
     Struct {
@@ -402,8 +407,10 @@ enum Component {
     },
 }
 
+#[allow(dead_code)]
 impl Component {}
 
+#[allow(dead_code, clippy::boxed_local)]
 fn from_struct(components: Vec<(String, Component)>) -> Irept {
     let mut result = Irept::from("struct");
     let mut subt: Irept = Irept::from("components");
@@ -422,6 +429,7 @@ fn from_struct(components: Vec<(String, Component)>) -> Irept {
     result
 }
 
+#[allow(dead_code)]
 fn from_unsigned(width: usize) -> Irept {
     let mut result = Irept::from("unsignedbv");
     result
@@ -430,6 +438,7 @@ fn from_unsigned(width: usize) -> Irept {
     result
 }
 
+#[allow(dead_code)]
 fn from_signed(width: usize) -> Irept {
     let mut result = Irept::from("signedbv");
     result
@@ -438,6 +447,7 @@ fn from_signed(width: usize) -> Irept {
     result
 }
 
+#[allow(dead_code, clippy::boxed_local)]
 fn from_pointer(to: Box<Component>) -> Irept {
     let mut result = Irept::from("pointer");
     result
@@ -446,6 +456,7 @@ fn from_pointer(to: Box<Component>) -> Irept {
     result
 }
 
+#[allow(dead_code)]
 impl From<Component> for Irept {
     fn from(data: Component) -> Self {
         match data {
@@ -458,6 +469,7 @@ impl From<Component> for Irept {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Debug)]
 struct Anon2Struct {
     bytes: Vec<u8>,
@@ -465,6 +477,12 @@ struct Anon2Struct {
     cache: HashMap<String, Component>,
 }
 
+#[allow(
+    dead_code,
+    clippy::assign_op_pattern,
+    clippy::let_unit_value,
+    clippy::needless_return
+)]
 impl Anon2Struct {
     // Basic LL(k) parser.
     fn parse_component(&mut self) -> Component {
@@ -611,17 +629,7 @@ impl Irept {
         if identifier.len() < 11 || &identifier[0..10] != "tag-#anon#".as_bytes() {
             return;
         }
-        panic!("Got anon struct {}", self.to_string());
-        let mut parser = Anon2Struct {
-            bytes: Vec::from(identifier),
-            counter: 10,
-            cache: HashMap::new(),
-        };
-        let parsed_struct = Irept::from(parser.parse_component());
-        let components = parsed_struct.named_subt.get("components").unwrap().clone();
-        self.named_subt.insert("components".to_string(), components);
-
-        self.id = "struct".to_string();
+        panic!("Got anon struct {}", self);
     }
 
     pub fn fix_struct(&mut self) {
@@ -653,23 +661,23 @@ impl Irept {
             for v in &mut self.subt {
                 v.fix_type(cache);
             }
-            let mut operands = Irept::default();
-            operands.subt = self.subt.clone();
+            let operands = Irept {
+                subt: self.subt.clone(),
+                ..Default::default()
+            };
             self.named_subt.insert("subtype".to_string(), operands);
             self.subt.clear();
         }
 
-        if self.id == "array" && !self.named_subt.contains_key("subtype") && self.subt.len() > 0 {
+        if self.id == "array" && !self.named_subt.contains_key("subtype") && !self.subt.is_empty() {
             let magic = self.subt[0].clone();
             self.named_subt.insert("subtype".to_string(), magic);
             self.subt.clear();
             // NOTE: For some unknown reason, CBMC can't decide whether array
             //sizes should be in binary or in hexa :)
             for (k, v) in &mut self.named_subt {
-                if k == "size" {
-                    if v.named_subt.contains_key("value") {
-                        esbmcfixes::fix_expression(v);
-                    }
+                if k == "size" && v.named_subt.contains_key("value") {
+                    esbmcfixes::fix_expression(v);
                 }
             }
         }
@@ -679,11 +687,11 @@ impl Irept {
                 v.fix_type(cache);
             }
 
-            for (_, v) in &mut self.named_subt {
+            for v in self.named_subt.values_mut() {
                 v.fix_type(cache);
             }
 
-            for (_, v) in &mut self.comments {
+            for v in self.comments.values_mut() {
                 v.fix_type(cache);
             }
 
@@ -709,11 +717,11 @@ impl Irept {
                 v.fix_type(cache);
             }
 
-            for (_, v) in &mut self.named_subt {
+            for v in self.named_subt.values_mut() {
                 v.fix_type(cache);
             }
 
-            for (_, v) in &mut self.comments {
+            for v in self.comments.values_mut() {
                 v.fix_type(cache);
             }
         }
@@ -729,7 +737,7 @@ mod tests {
             Ok(v) => v,
             Err(err) => panic!("Could not get GOTO_CC bin. {}", err),
         };
-        assert!(input_c.len() != 0);
+        assert!(!input_c.is_empty());
         println!("Invoking cbmc with: {}", input_c);
 
         let output = Command::new(goto_cc)
@@ -741,14 +749,8 @@ mod tests {
 
         if !output.status.success() {
             println!("CBMC exited with {}", output.status);
-            println!(
-                "\tSTDOUT: {}",
-                String::from_utf8_lossy(&output.stdout).to_string()
-            );
-            println!(
-                "\tSTDERR: {}",
-                String::from_utf8_lossy(&output.stderr).to_string()
-            );
+            println!("\tSTDOUT: {}", String::from_utf8_lossy(&output.stdout));
+            println!("\tSTDERR: {}", String::from_utf8_lossy(&output.stderr));
             panic!("GOTO-CC failed");
         }
     }
@@ -783,22 +785,14 @@ mod tests {
 
         if !output.status.success() {
             println!("ESBMC exited with {}", output.status);
-            println!(
-                "\tSTDOUT: {}",
-                String::from_utf8_lossy(&output.stdout).to_string()
-            );
-            println!(
-                "\tSTDERR: {}",
-                String::from_utf8_lossy(&output.stderr).to_string()
-            );
+            println!("\tSTDOUT: {}", String::from_utf8_lossy(&output.stdout));
+            println!("\tSTDERR: {}", String::from_utf8_lossy(&output.stderr));
             println!("\t[{}, {}]", library_gbf, input_gbf)
         }
         assert_eq!(status, output.status.code().unwrap());
     }
 
     use crate::adapter::cbmc2esbmc;
-    use crate::bytewriter::ByteWriter;
-    use crate::cbmc;
 
     fn run_test(input_c: &str, args: &[&str], expected: i32) {
         let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
