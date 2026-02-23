@@ -115,7 +115,7 @@ mod esbmcfixes {
     use super::HashSet;
     use super::Irept;
     pub fn fix_name(name: &str) -> String {
-        return String::from(name);
+        String::from(name)
     }
 
     pub fn function_call(name: &str, args: &Vec<Irept>, signature: &Irept) -> Irept {
@@ -328,8 +328,6 @@ impl IrepAdapter for CBMCSymbol {
 
         let name = esbmcfixes::fix_name(self.name.as_str());
         let basename = esbmcfixes::fix_name(self.base_name.as_str());
-
-        assert_ne!(basename, "num::verify::checked_unchecked_add_i8");
 
         if self.is_type {
             result
@@ -799,8 +797,8 @@ mod tests {
     }
 
     use crate::cbmc;
-    use crate::cbmc2esbmc;
-    use crate::ByteWriter;
+    use crate::adapter::cbmc2esbmc;
+    use crate::bytewriter::ByteWriter;
 
     fn run_test(input_c: &str, args: &[&str], expected: i32) {
         let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
