@@ -15,7 +15,6 @@ pub fn cbmc2esbmc(input: &str, output: &str) {
     std::fs::remove_file(output).ok();
 
     let converted = ESBMCParseResult::from(result);
-    std::fs::remove_file(output).ok();
     ByteWriter::write_to_file(converted.symbols_irep, converted.functions_irep, output);
 }
 
