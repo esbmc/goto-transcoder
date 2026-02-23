@@ -796,9 +796,9 @@ mod tests {
         assert_eq!(status, output.status.code().unwrap());
     }
 
-    use crate::cbmc;
     use crate::adapter::cbmc2esbmc;
     use crate::bytewriter::ByteWriter;
+    use crate::cbmc;
 
     fn run_test(input_c: &str, args: &[&str], expected: i32) {
         let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {

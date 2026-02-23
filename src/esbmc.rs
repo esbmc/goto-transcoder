@@ -16,8 +16,14 @@ pub fn process_esbmc_file(path: &str) -> Result<ESBMCParseResult, String> {
         symbols_irep: Vec::new(),
     };
 
-    result.reader.check_esbmc_header().expect("invalid ESBMC header — is this a .goto file?");
-    result.reader.check_esbmc_version().expect("unsupported ESBMC version");
+    result
+        .reader
+        .check_esbmc_header()
+        .expect("invalid ESBMC header — is this a .goto file?");
+    result
+        .reader
+        .check_esbmc_version()
+        .expect("unsupported ESBMC version");
 
     // Symbol table
     let number_of_symbols = result.reader.read_esbmc_word();

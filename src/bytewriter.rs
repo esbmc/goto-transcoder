@@ -14,7 +14,7 @@ impl ByteWriter {
     pub fn write_to_file(symbols: Vec<Irept>, functions: Vec<(String, Irept)>, output: &str) {
         trace!("(ESBMC) Writing goto file: {}", output);
         let mut writer = ByteWriter {
-            file: Vec::with_capacity((functions.len() + symbols.len())*10),
+            file: Vec::with_capacity((functions.len() + symbols.len()) * 10),
             irep_container: HashMap::new(),
             string_ref_container: HashMap::new(),
         };
@@ -39,7 +39,8 @@ impl ByteWriter {
         }
 
         let mut file = std::fs::File::create(output).expect("failed to create output file");
-        file.write_all(&writer.file).expect("failed to write output file");
+        file.write_all(&writer.file)
+            .expect("failed to write output file");
     }
 
     fn write_string(&mut self, value: &str) {

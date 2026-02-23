@@ -54,7 +54,9 @@ fn main() {
         Commands::CBMC2ESBMC(args) => {
             cbmc2esbmc(
                 args.input.to_str().expect("input path is not valid UTF-8"),
-                args.output.to_str().expect("output path is not valid UTF-8"),
+                args.output
+                    .to_str()
+                    .expect("output path is not valid UTF-8"),
             );
         }
         _ => panic!("Command not implemented yet"),
