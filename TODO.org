@@ -23,7 +23,7 @@ let Ok(goto_cc) = std::env::var("GOTO_CC") else {
 };
 #+end_src
 
-* TODO [#B] Tests with no assertions                              :refactor:
+* DONE [#B] Tests with no assertions                              :refactor:
 :PROPERTIES:
 :CUSTOM_ID: 3
 :CREATED: [2026-02-23 Mon]
