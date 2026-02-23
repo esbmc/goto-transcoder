@@ -44,7 +44,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_file() {
+    fn test_roundtrip() {
         let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
             Ok(v) => v,
             Err(err) => panic!("Could not open cargo folder. {}", err),
@@ -52,9 +52,30 @@ mod tests {
         let test_path = std::path::Path::new(&cargo_dir).join("resources/test/hello.goto");
         assert!(test_path.exists());
 
-        let result = process_esbmc_file(test_path.to_str().unwrap()).unwrap();
+        let original = process_esbmc_file(test_path.to_str().unwrap()).unwrap();
 
-        std::fs::remove_file("/tmp/test.goto").ok();
-        ByteWriter::write_to_file(result.symbols_irep, result.functions_irep, "/tmp/test.goto");
+        let tmp_path = "/tmp/esbmc_roundtrip_test.goto";
+        std::fs::remove_file(tmp_path).ok();
+        ByteWriter::write_to_file(
+            original.symbols_irep.clone(),
+            original.functions_irep.clone(),
+            tmp_path,
+        );
+
+        let roundtripped = process_esbmc_file(tmp_path).unwrap();
+        std::fs::remove_file(tmp_path).ok();
+
+        assert_eq!(
+            original.symbols_irep.len(),
+            roundtripped.symbols_irep.len(),
+            "symbol count mismatch"
+        );
+        assert_eq!(
+            original.functions_irep.len(),
+            roundtripped.functions_irep.len(),
+            "function count mismatch"
+        );
+        assert_eq!(original.symbols_irep, roundtripped.symbols_irep);
+        assert_eq!(original.functions_irep, roundtripped.functions_irep);
     }
 }
