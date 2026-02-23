@@ -33,7 +33,7 @@ impl ByteReader {
     pub fn read_file(path: &str) -> Self {
         trace!("Reading goto file: {}", path);
         let byte_content =
-            fs::read(path).unwrap_or_else(|_| panic!("Could not read file {}", path));
+            fs::read(path).unwrap_or_else(|e| panic!("Could not read file {}: {}", path, e));
         ByteReader::from(byte_content)
     }
 
