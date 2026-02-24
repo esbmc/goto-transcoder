@@ -26,7 +26,7 @@ jobs:
         restore-keys: |
           cargo-lint-${{ runner.os }}-
     - name: Clippy
-      run: cargo clippy -- -D warnings
+      run: cargo clippy --all-targets -- -D warnings
 
   fmt:
     runs-on: ubuntu-latest

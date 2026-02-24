@@ -32,7 +32,8 @@ impl ByteReader {
 
     pub fn read_file(path: &str) -> Self {
         trace!("Reading goto file: {}", path);
-        let byte_content = fs::read(path).expect(format!("Could not read file {}", path).as_str());
+        let byte_content =
+            fs::read(path).unwrap_or_else(|e| panic!("Could not read file {}: {}", path, e));
         ByteReader::from(byte_content)
     }
 
@@ -47,6 +48,7 @@ impl ByteReader {
     }
 
     // Reference parsing. First try the cache, if not available then parse the irep
+    #[allow(dead_code)]
     pub fn read_esbmc_reference(&mut self) -> Irept {
         let id = self.read_esbmc_word();
         if let Some(cached) = self.irep_container.get(&id) {
@@ -170,6 +172,7 @@ impl ByteReader {
 
     // String reference parsing. Similar than the irep one
 
+    #[allow(dead_code)]
     pub fn read_esbmc_string_ref(&mut self) -> String {
         let id = self.read_esbmc_word();
 
@@ -196,6 +199,7 @@ impl ByteReader {
 
     // Word reading (as u32)
 
+    #[allow(dead_code)]
     pub fn read_esbmc_word(&mut self) -> u32 {
         let raw_bytes: &[u8; 4] = self.file[self.pointer..self.pointer + 4]
             .try_into()
@@ -215,8 +219,8 @@ impl ByteReader {
             }
 
             let byte: u32 = self.get() as u32;
-            res = res | ((byte & 0x7f) << shift_distance);
-            shift_distance = shift_distance + 7;
+            res |= (byte & 0x7f) << shift_distance;
+            shift_distance += 7;
             if (byte & 0x80) == 0 {
                 break;
             }
@@ -231,6 +235,7 @@ impl ByteReader {
 
     // GBF checks
 
+    #[allow(dead_code)]
     pub fn check_esbmc_header(&mut self) -> Result<(), String> {
         trace!("Checking esbmc header");
         let header: &[u8; 3] = self.file[0..3]
@@ -266,6 +271,7 @@ impl ByteReader {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub fn check_esbmc_version(&mut self) -> Result<(), String> {
         let version = self.read_esbmc_word();
         if version != 1 {

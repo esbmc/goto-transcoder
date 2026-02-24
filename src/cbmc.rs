@@ -1,15 +1,13 @@
 use crate::bytereader::ByteReader;
 use crate::irep::Irept;
 use log::debug;
-use log::info;
-use std::collections::HashMap;
 
 ///////////////
 // CBMC DATA //
 ///////////////
 
 // Direct parsing result of a symbol
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct CBMCSymbol {
     pub stype: Irept, // stype => type. Rust reserves some weird words
     pub value: Irept,
@@ -18,6 +16,7 @@ pub struct CBMCSymbol {
     pub module: String,
     pub base_name: String,
     pub mode: String,
+    #[allow(dead_code)]
     pub pretty_name: String,
     pub flags: u32,
     pub is_type: bool,
@@ -37,38 +36,6 @@ pub struct CBMCSymbol {
     pub is_file_local: bool,
     pub is_extern: bool,
     pub is_volatile: bool,
-}
-impl Default for CBMCSymbol {
-    fn default() -> Self {
-        CBMCSymbol {
-            stype: Irept::default(),
-            value: Irept::default(),
-            location: Irept::default(),
-            name: String::default(),
-            module: String::default(),
-            base_name: String::default(),
-            mode: String::default(),
-            pretty_name: String::default(),
-            flags: 0,
-            is_type: false,
-            is_weak: false,
-            is_property: false,
-            is_macro: false,
-            is_exported: false,
-            is_input: false,
-            is_output: false,
-            is_state_var: false,
-            is_parameter: false,
-            is_auxiliary: false,
-            binding: false,
-            is_lvalue: false,
-            is_static_lifetime: false,
-            is_thread_local: false,
-            is_file_local: false,
-            is_extern: false,
-            is_volatile: false,
-        }
-    }
 }
 
 // Direct parsing result of an instruction
@@ -122,23 +89,17 @@ pub fn process_cbmc_file(path: &str) -> CBMCParseResult {
     let number_of_symbols = result.reader.read_cbmc_word();
     debug!("Got {} symbols", number_of_symbols);
     for _ in 0..number_of_symbols {
-        let mut sym = CBMCSymbol::default();
-        // Type is a... type
-        sym.stype = result.reader.read_cbmc_reference();
-        // Value is an expr
-        sym.value = result.reader.read_cbmc_reference();
-        // Location is just a string
-        sym.location = result.reader.read_cbmc_reference();
-        // Name is just a string
-        sym.name = result.reader.read_cbmc_string_ref();
-        // Module is just a string
-        sym.module = result.reader.read_cbmc_string_ref();
-        // Base name is just a string
-        sym.base_name = result.reader.read_cbmc_string_ref();
-        // Symbol mode conveys the language (C, C++, Rust, etc)
-        sym.mode = result.reader.read_cbmc_string_ref();
-        // String
-        sym.pretty_name = result.reader.read_cbmc_string_ref();
+        let mut sym = CBMCSymbol {
+            stype: result.reader.read_cbmc_reference(),
+            value: result.reader.read_cbmc_reference(),
+            location: result.reader.read_cbmc_reference(),
+            name: result.reader.read_cbmc_string_ref(),
+            module: result.reader.read_cbmc_string_ref(),
+            base_name: result.reader.read_cbmc_string_ref(),
+            mode: result.reader.read_cbmc_string_ref(),
+            pretty_name: result.reader.read_cbmc_string_ref(),
+            ..Default::default()
+        };
 
         // Ordering is used for historical reasons.
         let ordering = result.reader.read_cbmc_word();

@@ -1,5 +1,4 @@
 use crate::irep::Irept;
-use log::debug;
 use log::trace;
 use std::collections::HashMap;
 use std::io::Write;

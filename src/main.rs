@@ -7,11 +7,6 @@ mod irep;
 mod resources;
 
 use adapter::cbmc2esbmc;
-use bytereader::ByteReader;
-use bytewriter::ByteWriter;
-use esbmc::ESBMCParseResult;
-use irep::Irept;
-
 use log::trace;
 
 use clap::{Args, Parser, Subcommand};
@@ -59,7 +54,6 @@ fn main() {
                     .expect("output path is not valid UTF-8"),
             );
         }
-        _ => panic!("Command not implemented yet"),
     };
 
     trace!("Done");

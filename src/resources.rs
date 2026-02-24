@@ -1,5 +1,5 @@
 /// This crate serves to handle all the data available from the resources dir
-
+#[allow(dead_code)]
 pub fn get_resource_dir() -> String {
     match std::env::var("CARGO_MANIFEST_DIR") {
         Ok(v) => v,
@@ -7,6 +7,7 @@ pub fn get_resource_dir() -> String {
     }
 }
 
+#[allow(dead_code)]
 pub fn get_test_path(input: &str) -> String {
     std::path::Path::new(&get_resource_dir())
         .join(format!("resources/test/{}", &input))

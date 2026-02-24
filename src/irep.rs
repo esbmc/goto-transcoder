@@ -1,8 +1,7 @@
 use json::object;
 use json::JsonValue;
 use std::collections::HashMap;
-use std::collections::HashSet;
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Irept {
     // TODO: This should be references and not copies!
     pub id: String,
@@ -25,7 +24,7 @@ impl From<&Irept> for JsonValue {
         for sub in &data.subt {
             sub_vec.push(JsonValue::from(sub));
         }
-        if sub_vec.len() > 0 {
+        if !sub_vec.is_empty() {
             obj["subt"] = JsonValue::from(sub_vec);
         }
 
@@ -74,38 +73,30 @@ impl std::fmt::Display for Irept {
     }
 }
 
-impl Default for Irept {
-    fn default() -> Self {
-        Irept {
-            id: String::from(""),
-            subt: Vec::new(),
-            named_subt: HashMap::new(),
-            comments: HashMap::new(),
-        }
-    }
-}
-
 impl From<&String> for Irept {
     fn from(data: &String) -> Self {
-        let mut res = Irept::default();
-        res.id = data.clone();
-        res
+        Irept {
+            id: data.clone(),
+            ..Default::default()
+        }
     }
 }
 
 impl From<String> for Irept {
     fn from(data: String) -> Self {
-        let mut res = Irept::default();
-        res.id = data;
-        res
+        Irept {
+            id: data,
+            ..Default::default()
+        }
     }
 }
 
 impl From<&str> for Irept {
     fn from(data: &str) -> Self {
-        let mut res = Irept::default();
-        res.id = data.to_string();
-        res
+        Irept {
+            id: data.to_string(),
+            ..Default::default()
+        }
     }
 }
 

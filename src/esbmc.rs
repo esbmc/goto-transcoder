@@ -1,14 +1,15 @@
 use crate::bytereader::ByteReader;
-use crate::bytewriter::ByteWriter;
 use crate::irep::Irept;
 
 #[derive(Clone, Debug)]
 pub struct ESBMCParseResult {
+    #[allow(dead_code)]
     pub reader: ByteReader,
     pub symbols_irep: Vec<Irept>,
     pub functions_irep: Vec<(String, Irept)>,
 }
 
+#[allow(dead_code)]
 pub fn process_esbmc_file(path: &str) -> Result<ESBMCParseResult, String> {
     let mut result = ESBMCParseResult {
         reader: ByteReader::read_file(path),
@@ -35,11 +36,11 @@ pub fn process_esbmc_file(path: &str) -> Result<ESBMCParseResult, String> {
     // Functions
     let number_of_functions = result.reader.read_esbmc_word();
     for _ in 0..number_of_functions {
-        let foo = (
+        let function = (
             result.reader.read_esbmc_string(),
             result.reader.read_esbmc_reference(),
         );
-        result.functions_irep.push(foo.clone());
+        result.functions_irep.push(function.clone());
     }
 
     Ok(result)
@@ -48,6 +49,7 @@ pub fn process_esbmc_file(path: &str) -> Result<ESBMCParseResult, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::bytewriter::ByteWriter;
 
     #[test]
     fn test_roundtrip() {
