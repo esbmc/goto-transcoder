@@ -19,14 +19,4 @@ Check the [wiki](https://github.com/esbmc/goto-transcoder/wiki/Steps-to-verify-R
 
 ## Roadmap
 
-### v0.1
-- [ ] Full support for CBMC regression (in `ESBMC/regression/cbmc`). Such that CBMC -> ESBMC has the same verdict of invoking ESBMC directly.
-- [ ] String interner.
-
-### Future projects
-
-I expect to be able to use this as a library, opening a few possibilities:
-- [ ] LibTranscoder: Use this project as a way to parse/generate goto binary programs.
-- [ ] Partial equivalence checking (see [alive2](https://github.com/AliveToolkit/alive2)).
-- [ ] GOTO optimizer.
-- [ ] GOTO interpreter. 
+See [TODO.org](TODO.org) for the full issue tracker and roadmap.

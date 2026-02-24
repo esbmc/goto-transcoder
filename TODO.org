@@ -1,6 +1,6 @@
 #+TITLE: GOTO Transcoder - Issue Tracker
 #+TODO: TODO IN-PROGRESS | DONE CANCELLED
-#+TAGS: bug(b) feature(f) refactor(r) ci(c)
+#+TAGS: bug(b) feature(f) refactor(r) ci(c) perf(p)
 #+PRIORITIES: A B C
 
 * TODO [#B] Types of union_tag should should be expanded
@@ -38,3 +38,136 @@ Implement roundtrip testing: read, write, and re-read data to validate correctne
 :CREATED: [2026-02-23 Mon]
 :END:
 Currently adapter.rs has ~300 lines of integration test helpers mixed in with production code. Move them into a dedicated tests/ directory.
+
+* TODO [#A] Full support for CBMC regression                      :feature:
+:PROPERTIES:
+:CUSTOM_ID: 5
+:CREATED: [2026-02-24 Tue]
+:END:
+v0.1 goal: full support for the CBMC regression suite in ~ESBMC/regression/cbmc~. The CBMC → ESBMC conversion should yield the same verification verdict as invoking ESBMC directly on the same program.
+
+* TODO [#B] String interner for Irept IDs                         :refactor:perf:
+:PROPERTIES:
+:CUSTOM_ID: 6
+:CREATED: [2026-02-24 Tue]
+:END:
+~Irept.id~ takes on a small, highly-repeated set of values (~"nil"~, ~"struct"~, ~"code"~, ~"signedbv"~, etc.) but is stored as an owned ~String~, causing repeated heap allocations and byte-by-byte equality comparisons.
+
+Intern the ~id~ field using a thread-local pool (~thread_local!~ + ~RefCell<HashSet<&'static str>>~ + ~Box::leak~). After interning, equality becomes a pointer comparison and hashing hashes the pointer rather than the string bytes.
+
+The ~ByteReader~ already does manual per-file string interning (~string_ref_container~); a global interner would deduplicate across files and remove the need for that cache.
+
+* TODO [#B] Fix HashSet rebuilt on every fix_expression call      :refactor:perf:
+:PROPERTIES:
+:CUSTOM_ID: 7
+:CREATED: [2026-02-24 Tue]
+:END:
+In ~adapter.rs~, ~esbmcfixes::fix_expression~ reconstructs a ~HashSet<String>~ of known expression IDs on every invocation. Since ~fix_expression~ is called recursively for every node in every instruction in every function, this causes a heap allocation and N string copies per node.
+
+Replace with a compile-time static set using the ~phf~ crate:
+#+begin_src rust
+static EXPRESSIONS: phf::Set<&'static str> = phf::phf_set! {
+    "if", "member", "typecast", ...
+};
+#+end_src
+Or at minimum a ~OnceLock<HashSet<&'static str>>~ so it is built once.
+
+* TODO [#B] Fix type_cache key type                               :refactor:perf:
+:PROPERTIES:
+:CUSTOM_ID: 8
+:CREATED: [2026-02-24 Tue]
+:END:
+In ~adapter.rs~, ~type_cache~ is declared as ~HashMap<Irept, Irept>~. The keys are always leaf ~Irept~ nodes — ~Irept::from(format!("tag-{}", &sym.base_name))~ — which contain only an ~id~ string with empty children. Hashing an ~Irept~ key traverses the full subtree unnecessarily.
+
+Change to ~HashMap<String, Irept>~ and update lookup sites to use ~&self.named_subt["identifier"].id~ as the key.
+
+* TODO [#B] Replace panic!/unwrap with proper error handling       :refactor:
+:PROPERTIES:
+:CUSTOM_ID: 9
+:CREATED: [2026-02-24 Tue]
+:END:
+The parser and adapter use ~panic!~, ~unwrap()~, and ~expect()~ throughout, which crash the process on any malformed ~.goto~ file. Replace with ~Result~-based error propagation using ~thiserror~ for structured error types in the parser and ~anyhow~ for propagation in ~main.rs~ and ~adapter.rs~.
+
+* TODO [#C] Rc<Irept> for structural sharing                      :refactor:perf:
+:PROPERTIES:
+:CUSTOM_ID: 10
+:CREATED: [2026-02-24 Tue]
+:END:
+~Irept~ is cloned heavily throughout ~adapter.rs~ (e.g. ~sym.stype.clone()~, ~cache[...].clone()~, ~*self = cache[...].clone()~). Each clone deep-copies the entire subtree.
+
+Wrap child nodes in ~Rc<Irept>~:
+#+begin_src rust
+pub struct Irept {
+    pub id: String,
+    pub subt: Vec<Rc<Irept>>,
+    pub named_subt: HashMap<String, Rc<Irept>>,
+    pub comments: HashMap<String, Rc<Irept>>,
+}
+#+end_src
+~.clone()~ on an ~Rc~ is O(1) — only the reference count is incremented. This directly addresses the ~TODO: This should be references and not copies!~ comment in ~irep.rs:7~.
+
+* TODO [#C] Visitor pattern for tree transformations              :refactor:
+:PROPERTIES:
+:CUSTOM_ID: 11
+:CREATED: [2026-02-24 Tue]
+:END:
+~fix_type~ and ~fix_expression~ in ~adapter.rs~ both implement the same recursive traversal over ~subt~, ~named_subt~, and ~comments~. This traversal logic is duplicated across both functions.
+
+Extract an ~IrepVisitor~ trait with a default ~walk~ method that handles traversal, so each transformation only implements the per-node logic:
+#+begin_src rust
+trait IrepVisitor {
+    fn visit(&mut self, irep: &mut Irept);
+
+    fn walk(&mut self, irep: &mut Irept) {
+        self.visit(irep);
+        for v in &mut irep.subt { self.walk(v); }
+        for (_, v) in &mut irep.named_subt { self.walk(v); }
+        for (_, v) in &mut irep.comments { self.walk(v); }
+    }
+}
+#+end_src
+
+* TODO [#C] Cache hash value on Irept                             :refactor:perf:
+:PROPERTIES:
+:CUSTOM_ID: 12
+:CREATED: [2026-02-24 Tue]
+:END:
+~ByteWriter~ uses ~irep_container: HashMap<Irept, u32>~ as a deduplication cache. Each lookup hashes the full ~Irept~ tree recursively. Since ~Irept~ is immutable after construction, the hash can be computed once and stored:
+#+begin_src rust
+pub struct Irept {
+    pub id: String,
+    pub subt: Vec<Irept>,
+    pub named_subt: HashMap<String, Irept>,
+    pub comments: HashMap<String, Irept>,
+    cached_hash: u64,
+}
+#+end_src
+~Hash::hash~ would then feed only ~self.cached_hash~ into the hasher — O(1) regardless of tree depth. Best implemented together with #10 (~Rc<Irept>~).
+
+* TODO [#C] LibTranscoder: expose crate as a library              :feature:
+:PROPERTIES:
+:CUSTOM_ID: 13
+:CREATED: [2026-02-24 Tue]
+:END:
+Restructure the project so the parsing/writing/conversion logic is exposed as a library crate, not just a binary. This enables downstream tools (optimizer, interpreter, equivalence checker) to reuse the GBF parser without shelling out.
+
+* TODO [#C] Partial equivalence checking                          :feature:
+:PROPERTIES:
+:CUSTOM_ID: 14
+:CREATED: [2026-02-24 Tue]
+:END:
+Use the transcoder as a foundation for partial equivalence checking between GOTO programs, similar to [[https://github.com/AliveToolkit/alive2][alive2]] for LLVM IR. Depends on #13 (LibTranscoder).
+
+* TODO [#C] GOTO optimizer                                        :feature:
+:PROPERTIES:
+:CUSTOM_ID: 15
+:CREATED: [2026-02-24 Tue]
+:END:
+Implement peephole and structural optimizations over GOTO programs using the GBF read/write infrastructure. Depends on #13 (LibTranscoder).
+
+* TODO [#C] GOTO interpreter                                      :feature:
+:PROPERTIES:
+:CUSTOM_ID: 16
+:CREATED: [2026-02-24 Tue]
+:END:
+Implement a concrete interpreter for GOTO programs to support debugging and test generation. Depends on #13 (LibTranscoder).
