@@ -63,4 +63,4 @@ jobs:
       run: cargo build --verbose
 
     - name: Test
-      run: GOTO_CC=goto-cc ESBMC=$PWD/bin/esbmc cargo test -- --ignored
+      run: GOTO_CC=goto-cc ESBMC=$PWD/bin/esbmc cargo test
