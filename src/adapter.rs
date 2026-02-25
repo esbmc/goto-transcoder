@@ -863,7 +863,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn hello_world() {
         println!("Remember to set GOTO_CC and ESBMC environment variables!");
         // Basic
@@ -873,7 +872,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn hello_add() {
         // +
         run_test("hello_add.c", &["--goto-functions-only"], 0);
@@ -882,7 +880,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn hello_sub() {
         // -
         run_test("hello_sub.c", &["--goto-functions-only"], 0);
@@ -890,7 +887,6 @@ mod tests {
         run_test("hello_sub_fail.c", &["--incremental-bmc"], 1);
     }
     #[test]
-    #[ignore]
     fn hello_mul() {
         // *
         run_test("hello_mul.c", &["--goto-functions-only"], 0);
@@ -898,7 +894,6 @@ mod tests {
         run_test("hello_mul_fail.c", &["--incremental-bmc"], 1);
     }
     #[test]
-    #[ignore]
     fn hello_div() {
         // /
         run_test("hello_div.c", &["--goto-functions-only"], 0);
@@ -912,7 +907,6 @@ mod tests {
         );
     }
     #[test]
-    #[ignore]
     fn hello_eq() {
         // ==/!=
         run_test("hello_equality.c", &["--goto-functions-only"], 0);
@@ -920,7 +914,6 @@ mod tests {
         run_test("hello_equality_fail.c", &["--incremental-bmc"], 1);
     }
     #[test]
-    #[ignore]
     fn hello_ptr() {
         // pointer (address_of)
         run_test("hello_ptr.c", &["--goto-functions-only"], 0);
@@ -928,7 +921,6 @@ mod tests {
         run_test("hello_ptr_fail.c", &["--incremental-bmc"], 1);
     }
     #[test]
-    #[ignore]
     fn hello_array() {
         // array
         run_test("hello_array.c", &["--goto-functions-only"], 0);
@@ -942,7 +934,6 @@ mod tests {
         run_test("hello_array_init.c", &["--incremental-bmc"], 0);
     }
     #[test]
-    #[ignore]
     fn hello_struct() {
         // Struct
         run_test("hello_struct.c", &["--goto-functions-only"], 0);
@@ -951,7 +942,6 @@ mod tests {
         run_test("hello_struct_init.c", &["--incremental-bmc"], 0);
     }
     #[test]
-    #[ignore]
     fn hello_call() {
         // Function call
         run_test("hello_func.c", &["--goto-functions-only"], 0);
@@ -961,7 +951,6 @@ mod tests {
         run_test("hello_func_parameter_fail.c", &["--incremental-bmc"], 1);
     }
     #[test]
-    #[ignore]
     fn hello_goto() {
         // Goto-Label
         run_test("hello_label.c", &["--goto-functions-only"], 0);
@@ -969,7 +958,6 @@ mod tests {
         run_test("hello_label_fail.c", &["--incremental-bmc"], 1);
     }
     #[test]
-    #[ignore]
     fn hello_if() {
         // If
         run_test("hello_if.c", &["--goto-functions-only"], 0);
@@ -978,7 +966,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn struct_array() {
         // Struct of arrays
         run_test("struct_array.c", &["--goto-functions-only"], 0);
@@ -987,7 +974,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn goto_test() {
         run_goto_test("mul.goto", &["--goto-functions-only"], 0);
     }
@@ -998,14 +984,12 @@ mod tests {
     //     // TODO: Integrate Kani into the test framework
 
     #[test]
-    #[ignore]
     fn hello_rust_book() {
         run_goto_test("hello_world.rs.goto", &["--goto-functions-only"], 0);
         run_goto_test("hello_world.rs.goto", &["--incremental-bmc"], 1);
     }
 
     #[test]
-    #[ignore]
     fn first_steps_book() {
         run_goto_test("first_steps.rs.goto", &["--goto-functions-only"], 0);
         run_goto_test("first_steps.rs.goto", &["--incremental-bmc"], 1);
@@ -1013,7 +997,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
     fn unchecked_add_contract() {
         // Disabled because ESBMC does not support: object_size, overflow_result-+
         run_goto_test_2(

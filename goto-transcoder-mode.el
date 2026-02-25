@@ -28,7 +28,6 @@
 
 (defun goto-transcoder-setup ()
   "Set up the project main commands for use with project."
-  (message "GOTO Transcoder Mode Enabled")
   (setq-local compile-command "cargo build")
   (let ((root (locate-dominating-file default-directory "TODO.org")))
     (when root
@@ -39,7 +38,7 @@
         (let ((template
                `("g" "GOTO Transcoder Issue" entry
                  (file ,todo-file)
-                 ,(concat "* TODO [#B] %?\n"
+                 ,(concat "* TODO %?\n"
                           ":PROPERTIES:\n"
                           ":CUSTOM_ID: %(goto-transcoder--next-id)\n"
                           ":CREATED: %U\n"
