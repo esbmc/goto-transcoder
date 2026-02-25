@@ -10,7 +10,8 @@
 :END:
 The contract _RNvNtNtCse4K9yuySQJR_4core3num6verify15widening_mul_u8.out is currently crashing in ESBMC due to the unsupported union.
 
-* TODO [#B] #[ignore] used for the wrong reason                   :refactor:
+* DONE [#B] #[ignore] used for the wrong reason                    :refactor:
+CLOSED: [2026-02-25 Wed 11:29]
 :PROPERTIES:
 :CUSTOM_ID: 2
 :CREATED: [2026-02-23 Mon]
