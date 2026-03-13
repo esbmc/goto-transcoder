@@ -89,7 +89,7 @@ Change to ~HashMap<String, Irept>~ and update lookup sites to use ~&self.named_s
 :END:
 The parser and adapter use ~panic!~, ~unwrap()~, and ~expect()~ throughout, which crash the process on any malformed ~.goto~ file. Replace with ~Result~-based error propagation using ~thiserror~ for structured error types in the parser and ~anyhow~ for propagation in ~main.rs~ and ~adapter.rs~.
 
-* TODO [#C] Rc<Irept> for structural sharing                      :refactor:perf:
+* DONE [#C] Rc<Irept> for structural sharing                      :refactor:perf:
 :PROPERTIES:
 :CUSTOM_ID: 10
 :CREATED: [2026-02-24 Tue]

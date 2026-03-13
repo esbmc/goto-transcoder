@@ -1,13 +1,14 @@
 use json::object;
 use json::JsonValue;
 use std::collections::HashMap;
+use std::rc::Rc;
+
 #[derive(Clone, Debug, Default)]
 pub struct Irept {
-    // TODO: This should be references and not copies!
     pub id: String,
-    pub subt: Vec<Irept>,
-    pub named_subt: HashMap<String, Irept>,
-    pub comments: HashMap<String, Irept>,
+    pub subt: Vec<Rc<Irept>>,
+    pub named_subt: HashMap<String, Rc<Irept>>,
+    pub comments: HashMap<String, Rc<Irept>>,
 }
 
 impl Irept {
@@ -22,18 +23,18 @@ impl From<&Irept> for JsonValue {
 
         let mut sub_vec: Vec<JsonValue> = Vec::new();
         for sub in &data.subt {
-            sub_vec.push(JsonValue::from(sub));
+            sub_vec.push(JsonValue::from(sub.as_ref()));
         }
         if !sub_vec.is_empty() {
             obj["subt"] = JsonValue::from(sub_vec);
         }
 
         for (k, v) in &data.named_subt {
-            obj[k] = JsonValue::from(v);
+            obj[k] = JsonValue::from(v.as_ref());
         }
 
         for (k, v) in &data.comments {
-            obj[k] = JsonValue::from(v);
+            obj[k] = JsonValue::from(v.as_ref());
         }
         obj
     }
