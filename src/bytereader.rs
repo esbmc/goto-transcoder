@@ -58,29 +58,29 @@ impl ByteReader {
         let irep_id = self.read_esbmc_string_ref();
 
         // Sub-expression
-        let mut irep_sub: Vec<Irept> = Vec::new();
+        let mut irep_sub: Vec<std::rc::Rc<Irept>> = Vec::new();
         while self.peek() == b'S' {
             self.pointer += 1;
             let sub = self.read_esbmc_reference();
-            irep_sub.push(sub);
+            irep_sub.push(std::rc::Rc::new(sub));
         }
 
         // Named sub
-        let mut named_sub: HashMap<String, Irept> = HashMap::new();
+        let mut named_sub: HashMap<String, std::rc::Rc<Irept>> = HashMap::new();
         while self.peek() == b'N' {
             self.pointer += 1;
             let named_id = self.read_esbmc_string_ref();
             // TODO: assert named_id[0] != '#'
-            named_sub.insert(named_id, self.read_esbmc_reference());
+            named_sub.insert(named_id, std::rc::Rc::new(self.read_esbmc_reference()));
         }
 
         // Comment?
-        let mut comments_sub: HashMap<String, Irept> = HashMap::new();
+        let mut comments_sub: HashMap<String, std::rc::Rc<Irept>> = HashMap::new();
         while self.peek() == b'C' {
             self.pointer += 1;
             let named_id = self.read_esbmc_string_ref();
             // TODO: assert named_id[0] == '#'
-            comments_sub.insert(named_id, self.read_esbmc_reference());
+            comments_sub.insert(named_id, std::rc::Rc::new(self.read_esbmc_reference()));
         }
 
         let end_value = self.get();
@@ -108,29 +108,29 @@ impl ByteReader {
         let irep_id = self.read_cbmc_string_ref();
 
         // Sub-expression
-        let mut irep_sub: Vec<Irept> = Vec::new();
+        let mut irep_sub: Vec<std::rc::Rc<Irept>> = Vec::new();
         while self.peek() == b'S' {
             self.pointer += 1;
             let sub = self.read_cbmc_reference();
-            irep_sub.push(sub);
+            irep_sub.push(std::rc::Rc::new(sub));
         }
 
         // Named sub
-        let mut named_sub: HashMap<String, Irept> = HashMap::new();
+        let mut named_sub: HashMap<String, std::rc::Rc<Irept>> = HashMap::new();
         while self.peek() == b'N' {
             self.pointer += 1;
             let named_id = self.read_cbmc_string_ref();
             // TODO: assert named_id[0] != '#'
-            named_sub.insert(named_id, self.read_cbmc_reference());
+            named_sub.insert(named_id, std::rc::Rc::new(self.read_cbmc_reference()));
         }
 
         // Comment?
-        let mut comments_sub: HashMap<String, Irept> = HashMap::new();
+        let mut comments_sub: HashMap<String, std::rc::Rc<Irept>> = HashMap::new();
         while self.peek() == b'C' {
             self.pointer += 1;
             let named_id = self.read_cbmc_string_ref();
             // TODO: assert named_id[0] == '#'
-            comments_sub.insert(named_id, self.read_cbmc_reference());
+            comments_sub.insert(named_id, std::rc::Rc::new(self.read_cbmc_reference()));
         }
 
         let end_value = self.get();

@@ -1,6 +1,7 @@
 // This module is responsible to convert between CBMC <=> ESBMC
 
 use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
 
 use crate::bytewriter::ByteWriter;
 use crate::cbmc::{CBMCFunction, CBMCInstruction, CBMCParseResult, CBMCSymbol};
@@ -112,6 +113,7 @@ impl From<CBMCParseResult> for ESBMCParseResult {
 mod esbmcfixes {
     use super::HashSet;
     use super::Irept;
+    use super::Rc;
     pub fn fix_name(name: &str) -> String {
         String::from(name)
     }
@@ -119,34 +121,37 @@ mod esbmcfixes {
     #[allow(dead_code)]
     pub fn function_call(name: &str, args: &[Irept], _signature: &Irept) -> Irept {
         let mut res = Irept::from("code");
-        res.named_subt
-            .insert("statement".to_string(), Irept::from("function_call"));
+        res.named_subt.insert(
+            "statement".to_string(),
+            Rc::new(Irept::from("function_call")),
+        );
 
         let mut operands = Irept::default();
 
         // LHS
-        operands.subt.push(Irept::from("nil"));
+        operands.subt.push(Rc::new(Irept::from("nil")));
 
         // FUNCTION
         let mut symbol = Irept::from("symbol");
         symbol
             .named_subt
-            .insert("identifier".to_string(), Irept::from(name));
+            .insert("identifier".to_string(), Rc::new(Irept::from(name)));
         symbol
             .named_subt
-            .insert("name".to_string(), Irept::from(name));
+            .insert("name".to_string(), Rc::new(Irept::from(name)));
 
-        operands.subt.push(symbol);
+        operands.subt.push(Rc::new(symbol));
         // ARGS
         let mut arguments = Irept::from("arguments");
         for i in args {
-            arguments.subt.push(i.clone());
+            arguments.subt.push(Rc::new(i.clone()));
         }
 
-        operands.subt.push(arguments);
+        operands.subt.push(Rc::new(arguments));
 
         // Add operands
-        res.named_subt.insert("operands".to_string(), operands);
+        res.named_subt
+            .insert("operands".to_string(), Rc::new(operands));
 
         res
     }
@@ -164,7 +169,7 @@ mod esbmcfixes {
                 let number = u64::from_str_radix(&irep.named_subt["value"].id, 16).unwrap();
                 irep.named_subt.insert(
                     String::from("value"),
-                    Irept::from(format!("{:032b}", number)),
+                    Rc::new(Irept::from(format!("{:032b}", number))),
                 );
             }
         }
@@ -225,21 +230,23 @@ mod esbmcfixes {
                 subt: irep.subt.clone(),
                 ..Default::default()
             };
-            irep.named_subt.insert("operands".to_string(), operands);
+            irep.named_subt
+                .insert("operands".to_string(), Rc::new(operands));
             irep.subt.clear();
         }
 
         for sub in &mut irep.subt {
-            fix_expression(sub)
+            fix_expression(Rc::make_mut(sub))
         }
 
         for (k, v) in &mut irep.named_subt {
+            let v_mut = Rc::make_mut(v);
             if k == "components" {
-                for sub in &mut v.subt {
-                    sub.id = "component".to_string();
+                for sub in &mut v_mut.subt {
+                    Rc::make_mut(sub).id = "component".to_string();
                 }
             }
-            fix_expression(v);
+            fix_expression(v_mut);
         }
     }
 }
@@ -256,43 +263,50 @@ impl IrepAdapter for CBMCInstruction {
             ..Default::default()
         };
         code.subt.clear();
-        code.named_subt.insert("operands".to_string(), operands);
+        code.named_subt
+            .insert("operands".to_string(), Rc::new(operands));
 
         // Some checks
         if code.id != "nil" && code.named_subt.get("statement").unwrap().id == "assign" {
             assert_eq!(2, code.named_subt.get("operands").unwrap().subt.len());
         }
-        result.named_subt.insert("code".to_string(), code);
+        result.named_subt.insert("code".to_string(), Rc::new(code));
 
         result
             .named_subt
-            .insert("location".to_string(), self.source_location);
+            .insert("location".to_string(), Rc::new(self.source_location));
         result.named_subt.insert(
             "typeid".to_string(),
-            Irept::from(self.instr_type.to_string()),
+            Rc::new(Irept::from(self.instr_type.to_string())),
         );
-        result.named_subt.insert("guard".to_string(), self.guard);
+        result
+            .named_subt
+            .insert("guard".to_string(), Rc::new(self.guard));
 
         if !self.targets.is_empty() {
             let mut t_ireps = Irept::default();
             for target in self.targets {
-                t_ireps.subt.push(target);
+                t_ireps.subt.push(Rc::new(target));
             }
-            result.named_subt.insert("targets".to_string(), t_ireps);
+            result
+                .named_subt
+                .insert("targets".to_string(), Rc::new(t_ireps));
         }
 
         if !self.labels.is_empty() {
             let mut l_ireps = Irept::default();
             for label in self.labels {
-                l_ireps.subt.push(Irept::from(label));
+                l_ireps.subt.push(Rc::new(Irept::from(label)));
             }
-            result.named_subt.insert("labels".to_string(), l_ireps);
+            result
+                .named_subt
+                .insert("labels".to_string(), Rc::new(l_ireps));
         }
 
         // ESBMC stuff...
         result
             .named_subt
-            .insert("function".to_string(), self.function);
+            .insert("function".to_string(), Rc::new(self.function));
 
         esbmcfixes::fix_expression(&mut result);
         result
@@ -304,7 +318,7 @@ impl IrepAdapter for CBMCFunction {
         let mut result = Irept::from("goto-program");
         for instr in self.instructions {
             if instr.code.id == "nil" || instr.code.named_subt["statement"].id != "output" {
-                result.subt.push(instr.to_esbmc_irep());
+                result.subt.push(Rc::new(instr.to_esbmc_irep()));
             }
         }
         result
@@ -314,20 +328,24 @@ impl IrepAdapter for CBMCFunction {
 impl IrepAdapter for CBMCSymbol {
     fn to_esbmc_irep(self) -> Irept {
         let mut result = Irept::default();
-        result.named_subt.insert("type".to_string(), self.stype);
-        result.named_subt.insert("symvalue".to_string(), self.value);
+        result
+            .named_subt
+            .insert("type".to_string(), Rc::new(self.stype));
+        result
+            .named_subt
+            .insert("symvalue".to_string(), Rc::new(self.value));
 
         result
             .named_subt
-            .insert("location".to_string(), self.location);
+            .insert("location".to_string(), Rc::new(self.location));
 
         result
             .named_subt
-            .insert("module".to_string(), Irept::from(&self.module));
+            .insert("module".to_string(), Rc::new(Irept::from(&self.module)));
 
         result
             .named_subt
-            .insert("mode".to_string(), Irept::from(&self.mode));
+            .insert("mode".to_string(), Rc::new(Irept::from(&self.mode)));
 
         let name = esbmcfixes::fix_name(self.name.as_str());
         let basename = esbmcfixes::fix_name(self.base_name.as_str());
@@ -335,52 +353,52 @@ impl IrepAdapter for CBMCSymbol {
         if self.is_type {
             result
                 .named_subt
-                .insert("is_type".to_string(), Irept::from("1"));
+                .insert("is_type".to_string(), Rc::new(Irept::from("1")));
         }
 
         if self.is_macro {
             result
                 .named_subt
-                .insert("is_macro".to_string(), Irept::from("1"));
+                .insert("is_macro".to_string(), Rc::new(Irept::from("1")));
         }
 
         if self.is_parameter {
             result
                 .named_subt
-                .insert("is_parameter".to_string(), Irept::from("1"));
+                .insert("is_parameter".to_string(), Rc::new(Irept::from("1")));
         }
 
         if self.is_lvalue {
             result
                 .named_subt
-                .insert("lvalue".to_string(), Irept::from("1"));
+                .insert("lvalue".to_string(), Rc::new(Irept::from("1")));
         }
 
         if self.is_static_lifetime {
             result
                 .named_subt
-                .insert("static_lifetime".to_string(), Irept::from("1"));
+                .insert("static_lifetime".to_string(), Rc::new(Irept::from("1")));
         }
 
         if self.is_file_local {
             result
                 .named_subt
-                .insert("file_local".to_string(), Irept::from("1"));
+                .insert("file_local".to_string(), Rc::new(Irept::from("1")));
         }
 
         if self.is_extern {
             result
                 .named_subt
-                .insert("is_extern".to_string(), Irept::from("1"));
+                .insert("is_extern".to_string(), Rc::new(Irept::from("1")));
         }
 
         result
             .named_subt
-            .insert("base_name".to_string(), Irept::from(basename));
+            .insert("base_name".to_string(), Rc::new(Irept::from(basename)));
 
         result
             .named_subt
-            .insert("name".to_string(), Irept::from(name));
+            .insert("name".to_string(), Rc::new(Irept::from(name)));
 
         // Fix flags
         esbmcfixes::fix_expression(&mut result);
@@ -416,14 +434,16 @@ fn from_struct(components: Vec<(String, Component)>) -> Irept {
     for (name, component) in components {
         let mut irep = Irept::from("component");
         irep.named_subt
-            .insert("name".to_string(), Irept::from(name.clone()));
+            .insert("name".to_string(), Rc::new(Irept::from(name.clone())));
         irep.named_subt
-            .insert("prettyname".to_string(), Irept::from(name));
+            .insert("prettyname".to_string(), Rc::new(Irept::from(name)));
         irep.named_subt
-            .insert("type".to_string(), Irept::from(component));
-        subt.subt.push(irep);
+            .insert("type".to_string(), Rc::new(Irept::from(component)));
+        subt.subt.push(Rc::new(irep));
     }
-    result.named_subt.insert("components".to_string(), subt);
+    result
+        .named_subt
+        .insert("components".to_string(), Rc::new(subt));
 
     result
 }
@@ -433,7 +453,7 @@ fn from_unsigned(width: usize) -> Irept {
     let mut result = Irept::from("unsignedbv");
     result
         .named_subt
-        .insert("width".to_string(), Irept::from(width.to_string()));
+        .insert("width".to_string(), Rc::new(Irept::from(width.to_string())));
     result
 }
 
@@ -442,7 +462,7 @@ fn from_signed(width: usize) -> Irept {
     let mut result = Irept::from("signedbv");
     result
         .named_subt
-        .insert("width".to_string(), Irept::from(width.to_string()));
+        .insert("width".to_string(), Rc::new(Irept::from(width.to_string())));
     result
 }
 
@@ -451,7 +471,7 @@ fn from_pointer(to: Box<Component>) -> Irept {
     let mut result = Irept::from("pointer");
     result
         .named_subt
-        .insert("subtype".to_string(), Irept::from(*to));
+        .insert("subtype".to_string(), Rc::new(Irept::from(*to)));
     result
 }
 
@@ -647,24 +667,27 @@ impl Irept {
             let subt = self.named_subt["parameters"].subt.clone();
             let mut arguments = Irept::from("arguments");
             arguments.subt = subt;
-            self.named_subt.insert("arguments".to_string(), arguments);
+            self.named_subt
+                .insert("arguments".to_string(), Rc::new(arguments));
         }
 
         if self.named_subt.contains_key("components") {
-            for v in &mut self.named_subt.get_mut("components").unwrap().subt {
-                v.fix_struct();
+            let components = Rc::make_mut(self.named_subt.get_mut("components").unwrap());
+            for v in &mut components.subt {
+                Rc::make_mut(v).fix_struct();
             }
         }
 
         if self.id == "pointer" && !self.named_subt.contains_key("subtype") {
             for v in &mut self.subt {
-                v.fix_type(cache);
+                Rc::make_mut(v).fix_type(cache);
             }
             let operands = Irept {
                 subt: self.subt.clone(),
                 ..Default::default()
             };
-            self.named_subt.insert("subtype".to_string(), operands);
+            self.named_subt
+                .insert("subtype".to_string(), Rc::new(operands));
             self.subt.clear();
         }
 
@@ -676,22 +699,22 @@ impl Irept {
             //sizes should be in binary or in hexa :)
             for (k, v) in &mut self.named_subt {
                 if k == "size" && v.named_subt.contains_key("value") {
-                    esbmcfixes::fix_expression(v);
+                    esbmcfixes::fix_expression(Rc::make_mut(v));
                 }
             }
         }
 
         if self.id != "struct_tag" {
             for v in &mut self.subt {
-                v.fix_type(cache);
+                Rc::make_mut(v).fix_type(cache);
             }
 
             for v in self.named_subt.values_mut() {
-                v.fix_type(cache);
+                Rc::make_mut(v).fix_type(cache);
             }
 
             for v in self.comments.values_mut() {
-                v.fix_type(cache);
+                Rc::make_mut(v).fix_type(cache);
             }
 
             return;
@@ -701,27 +724,27 @@ impl Irept {
             return;
         }
 
-        if !cache.contains_key(&self.named_subt["identifier"]) {
+        if !cache.contains_key(&*self.named_subt["identifier"]) {
             trace!("Cache miss {}", self.to_string());
             self.expand_anon_struct();
             //self.fix_type(cache);
             return;
         }
 
-        *self = cache[&self.named_subt["identifier"]].clone();
+        *self = cache[&*self.named_subt["identifier"]].clone();
 
         // redo cache
         if irep_contains(self, "struct_tag") {
             for v in &mut self.subt {
-                v.fix_type(cache);
+                Rc::make_mut(v).fix_type(cache);
             }
 
             for v in self.named_subt.values_mut() {
-                v.fix_type(cache);
+                Rc::make_mut(v).fix_type(cache);
             }
 
             for v in self.comments.values_mut() {
-                v.fix_type(cache);
+                Rc::make_mut(v).fix_type(cache);
             }
         }
     }
