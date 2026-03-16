@@ -28,7 +28,7 @@ Use the transcoder as a foundation for partial equivalence checking between GOTO
 
 * V1.0
 
-** TODO [#B] Types of union_tag should should be expanded
+** TODO [#B] Types of union_tag should be expanded
 :PROPERTIES:
 :CUSTOM_ID: 1
 :CREATED: [2026-02-23 Mon 17:27]
