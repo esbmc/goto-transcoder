@@ -1,12 +1,4 @@
-mod adapter;
-mod bytereader;
-mod bytewriter;
-mod cbmc;
-mod esbmc;
-mod irep;
-mod resources;
-
-use adapter::cbmc2esbmc;
+use gototranscoder::adapter::cbmc2esbmc;
 use log::trace;
 
 use clap::{Args, Parser, Subcommand};
