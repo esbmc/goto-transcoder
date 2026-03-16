@@ -3,7 +3,6 @@
 #+TAGS: bug(b) feature(f) refactor(r) ci(c) perf(p)
 #+PRIORITIES: A B C
 
-
 * Sometime
 ** TODO [#C] GOTO optimizer                                         :feature:
 :PROPERTIES:
@@ -48,8 +47,6 @@ static EXPRESSIONS: phf::Set<&'static str> = phf::phf_set! {
 #+end_src
 Or at minimum a ~OnceLock<HashSet<&'static str>>~ so it is built once.
 
-
-* V1.0 Roadmap
 ** TODO [#B] Fix type_cache key type                          :refactor:perf:
 :PROPERTIES:
 :CUSTOM_ID: 8
@@ -113,22 +110,16 @@ Restructure the project so the parsing/writing/conversion logic is exposed as a 
 
 
 
-* V0.2 Roadmap
-** TODO [#A] Full support for CBMC regression                       :feature:
-:PROPERTIES:
-:CUSTOM_ID: 5
-:CREATED: [2026-02-24 Tue]
-:END:
-v0.1 goal: full support for the CBMC regression suite in ~ESBMC/regression/cbmc~. The CBMC → ESBMC conversion should yield the same verification verdict as invoking ESBMC directly on the same program.
 
+* V1.0 Roadmap
+** TODO RTL support                                           :feature: 
+Try some EBMC
 
-Intern the ~id~ field using a thread-local pool (~thread_local!~ + ~RefCell<HashSet<&'static str>>~ + ~Box::leak~). After interning, equality becomes a pointer comparison and hashing hashes the pointer rather than the string bytes.
+** TODO Rust core support                                            :feature: 
+Get the same level of support from CBMC. Or update this with correct expectations
 
-The ~ByteReader~ already does manual per-file string interning (~string_ref_container~); a global interner would deduplicate across files and remove the need for that cache.
-
-
-
-
+** TODO JBMC regression support :feature:
+Get the same level of support than JBMC. Or update this with correct expectations
 ** TODO [#B] Types of union_tag should be expanded
 :PROPERTIES:
 :CUSTOM_ID: 1
@@ -136,6 +127,16 @@ The ~ByteReader~ already does manual per-file string interning (~string_ref_cont
 :END:
 The contract _RNvNtNtCse4K9yuySQJR_4core3num6verify15widening_mul_u8.out is currently crashing in ESBMC due to the unsupported union.
 
+
+* V0.3 Roadmap
+** TODO [#A] Full support for CBMC regression                       :feature:
+:PROPERTIES:
+:CUSTOM_ID: 5
+:CREATED: [2026-02-24 Tue]
+:END:
+v0.1 goal: full support for the CBMC regression suite in ~ESBMC/regression/cbmc~. The CBMC → ESBMC conversion should yield the same verification verdict as invoking ESBMC directly on the same program.
+
+* V0.2 Roadmap
 ** DONE [#C] Move tests into tests/                                :refactor:
 CLOSED: [2026-03-16 Mon 09:53]
 :PROPERTIES:
