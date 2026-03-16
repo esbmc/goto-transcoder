@@ -161,6 +161,15 @@ mod esbmcfixes {
             irep.id = "sideeffect".to_string();
         }
 
+        if irep.id == "string_constant" {
+            irep.id = "string-constant".to_string();
+        }
+
+        // Not sure about this
+        if irep.id == "ieee_float_equal" {
+            irep.id = "=".to_string();
+        }
+
         if irep.id == "constant"
             && !["pointer", "bool"].contains(&irep.named_subt["type"].id.as_str())
         {
@@ -190,7 +199,9 @@ mod esbmcfixes {
                 "-",
                 "=",
                 "<",
+                "<=",
                 ">",
+                "unary-",
                 "overflow_result-+",
                 "overflow_result--",
                 "overflow_result-*",
