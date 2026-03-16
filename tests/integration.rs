@@ -25,13 +25,7 @@ fn generate_cbmc_gbf(input_c: &str, output_goto: &str) {
     }
 }
 
-fn run_esbmc_gbf(
-    input_gbf: &str,
-    args: &[&str],
-    status: i32,
-    library_gbf: &str,
-    entrypoint: &str,
-) {
+fn run_esbmc_gbf(input_gbf: &str, args: &[&str], status: i32, library_gbf: &str, entrypoint: &str) {
     let cargo_dir = match std::env::var("CARGO_MANIFEST_DIR") {
         Ok(v) => v,
         Err(err) => panic!("Could not open cargo folder. {}", err),
@@ -67,8 +61,7 @@ fn run_test(input_c: &str, args: &[&str], expected: i32) {
         Ok(v) => v,
         Err(err) => panic!("Could not open cargo folder. {}", err),
     };
-    let test_path =
-        std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_c));
+    let test_path = std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_c));
 
     let cbmc_gbf = format!("{}.cbmc.goto", input_c);
     let esbmc_gbf = format!("{}.esbmc.goto", input_c);
@@ -92,8 +85,7 @@ fn run_goto_test(input_goto: &str, args: &[&str], expected: i32) {
         Ok(v) => v,
         Err(err) => panic!("Could not open cargo folder. {}", err),
     };
-    let test_path =
-        std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_goto));
+    let test_path = std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_goto));
 
     let esbmc_gbf = format!("{}.goto", input_goto); // TODO: generate UUID!
     cbmc2esbmc(test_path.to_str().unwrap(), esbmc_gbf.as_str());
@@ -114,8 +106,7 @@ fn run_goto_test_2(input_goto: &str, args: &[&str], expected: i32, entrypoint: &
         Ok(v) => v,
         Err(err) => panic!("Could not open cargo folder. {}", err),
     };
-    let test_path =
-        std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_goto));
+    let test_path = std::path::Path::new(&cargo_dir).join(format!("resources/test/{}", input_goto));
 
     let esbmc_gbf = format!("{}.goto", input_goto); // TODO: generate UUID!
     cbmc2esbmc(test_path.to_str().unwrap(), esbmc_gbf.as_str());
