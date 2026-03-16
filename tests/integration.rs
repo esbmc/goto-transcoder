@@ -133,7 +133,6 @@ fn run_goto_test_2(input_goto: &str, args: &[&str], expected: i32, entrypoint: &
 
 #[test]
 fn hello_world() {
-    println!("Remember to set GOTO_CC and ESBMC environment variables!");
     // Basic
     run_test("hello_world.c", &["--goto-functions-only"], 0);
     run_test("hello_world.c", &["--incremental-bmc"], 0);
