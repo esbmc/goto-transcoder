@@ -4,7 +4,7 @@
 #+PRIORITIES: A B C
 
 
-* Next
+* Sometime
 ** TODO [#C] GOTO optimizer                                         :feature:
 :PROPERTIES:
 :CUSTOM_ID: 15
@@ -26,32 +26,12 @@ Implement a concrete interpreter for GOTO programs to support debugging and test
 :END:
 Use the transcoder as a foundation for partial equivalence checking between GOTO programs, similar to [[https://github.com/AliveToolkit/alive2][alive2]] for LLVM IR. Depends on #13 (LibTranscoder).
 
-* V1.0
-
-** TODO [#B] Types of union_tag should be expanded
-:PROPERTIES:
-:CUSTOM_ID: 1
-:CREATED: [2026-02-23 Mon 17:27]
-:END:
-The contract _RNvNtNtCse4K9yuySQJR_4core3num6verify15widening_mul_u8.out is currently crashing in ESBMC due to the unsupported union.
-
-** TODO [#A] Full support for CBMC regression                       :feature:
-:PROPERTIES:
-:CUSTOM_ID: 5
-:CREATED: [2026-02-24 Tue]
-:END:
-v0.1 goal: full support for the CBMC regression suite in ~ESBMC/regression/cbmc~. The CBMC → ESBMC conversion should yield the same verification verdict as invoking ESBMC directly on the same program.
-
 ** TODO [#B] String interner for Irept IDs                    :refactor:perf:
 :PROPERTIES:
 :CUSTOM_ID: 6
 :CREATED: [2026-02-24 Tue]
 :END:
 ~Irept.id~ takes on a small, highly-repeated set of values (~"nil"~, ~"struct"~, ~"code"~, ~"signedbv"~, etc.) but is stored as an owned ~String~, causing repeated heap allocations and byte-by-byte equality comparisons.
-
-Intern the ~id~ field using a thread-local pool (~thread_local!~ + ~RefCell<HashSet<&'static str>>~ + ~Box::leak~). After interning, equality becomes a pointer comparison and hashing hashes the pointer rather than the string bytes.
-
-The ~ByteReader~ already does manual per-file string interning (~string_ref_container~); a global interner would deduplicate across files and remove the need for that cache.
 
 ** TODO [#B] Fix HashSet rebuilt on every fix_expression call :refactor:perf:
 :PROPERTIES:
@@ -68,6 +48,8 @@ static EXPRESSIONS: phf::Set<&'static str> = phf::phf_set! {
 #+end_src
 Or at minimum a ~OnceLock<HashSet<&'static str>>~ so it is built once.
 
+
+* V1.0 Roadmap
 ** TODO [#B] Fix type_cache key type                          :refactor:perf:
 :PROPERTIES:
 :CUSTOM_ID: 8
@@ -129,6 +111,30 @@ pub struct Irept {
 :END:
 Restructure the project so the parsing/writing/conversion logic is exposed as a library crate, not just a binary. This enables downstream tools (optimizer, interpreter, equivalence checker) to reuse the GBF parser without shelling out.
 
+
+
+* V0.2 Roadmap
+** TODO [#A] Full support for CBMC regression                       :feature:
+:PROPERTIES:
+:CUSTOM_ID: 5
+:CREATED: [2026-02-24 Tue]
+:END:
+v0.1 goal: full support for the CBMC regression suite in ~ESBMC/regression/cbmc~. The CBMC → ESBMC conversion should yield the same verification verdict as invoking ESBMC directly on the same program.
+
+
+Intern the ~id~ field using a thread-local pool (~thread_local!~ + ~RefCell<HashSet<&'static str>>~ + ~Box::leak~). After interning, equality becomes a pointer comparison and hashing hashes the pointer rather than the string bytes.
+
+The ~ByteReader~ already does manual per-file string interning (~string_ref_container~); a global interner would deduplicate across files and remove the need for that cache.
+
+
+
+
+** TODO [#B] Types of union_tag should be expanded
+:PROPERTIES:
+:CUSTOM_ID: 1
+:CREATED: [2026-02-23 Mon 17:27]
+:END:
+The contract _RNvNtNtCse4K9yuySQJR_4core3num6verify15widening_mul_u8.out is currently crashing in ESBMC due to the unsupported union.
 
 ** DONE [#C] Move tests into tests/                                :refactor:
 CLOSED: [2026-03-16 Mon 09:53]
