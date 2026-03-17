@@ -8,7 +8,7 @@ inline void baz()
   unsigned short ignore;
   ignore=g;
   // should fail
-  __ESBMC_assert(0, "KABOOM");
+  assert(0);
 }
 
 static void foo()

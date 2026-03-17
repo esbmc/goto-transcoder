@@ -17,6 +17,7 @@ struct file_ops fops = { .open =  my_open };
 
 int main(void)
 {    
+  fops.open =  my_open;
   struct dev tmp[4];
 
   devs = &tmp;

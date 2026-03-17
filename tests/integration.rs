@@ -856,19 +856,687 @@ fn test_01_cbmc_externfailing_assert1() {
     run_cbmc_regression_test("01_cbmc_ExternFailing_Assert1");
 }
 
-// Broken tests (looks OK but don't run)
-
-#[ignore]
 #[test]
 fn test_01_cbmc_function_pointer11() {
     run_cbmc_regression_test("01_cbmc_Function_Pointer11");
 }
 
-#[ignore]
 #[test]
 fn test_01_cbmc_function_pointer12() {
     run_cbmc_regression_test("01_cbmc_Function_Pointer12");
 }
+
+#[test]
+fn test_01_cbmc_recursion() {
+    run_cbmc_regression_test("01_cbmc_Recursion");
+}
+
+
+#[test]
+fn test_01_cbmc_recursion2() {
+    run_cbmc_regression_test("01_cbmc_Recursion2");
+}
+
+#[test]
+fn test_01_cbmc_recursion3() {
+    run_cbmc_regression_test("01_cbmc_Recursion3");
+}
+
+
+#[test]
+fn test_01_cbmc_pointer18() {
+    run_cbmc_regression_test("01_cbmc_Pointer18");
+}
+
+#[test]
+fn test_01_cbmc_for4() {
+    run_cbmc_regression_test("01_cbmc_for4");
+}
+
+#[test]
+fn test_01_cbmc_function_pointer8() {
+    run_cbmc_regression_test("01_cbmc_Function_Pointer8");
+}
+
+#[test]
+fn test_01_cbmc_bv_arithmetic2() {
+    run_cbmc_regression_test("01_cbmc_BV_Arithmetic2");
+}
+
+#[test]
+fn test_01_cbmc_function_pointer2() {
+    run_cbmc_regression_test("01_cbmc_Function_Pointer2");
+}
+
+#[test]
+fn test_01_cbmc_function_pointer7() {
+    run_cbmc_regression_test("01_cbmc_Function_Pointer7");
+}
+
+#[test]
+fn test_01_cbmc_struct_hierarchy1() {
+    run_cbmc_regression_test("01_cbmc_Struct_Hierarchy1")
+}
+
+#[test]
+fn test_01_cbmc_struct_initialization3() {
+    run_cbmc_regression_test("01_cbmc_Struct_Initialization3")
+}
+
+#[test]
+fn test_01_cbmc_struct_pointer1() {
+    run_cbmc_regression_test("01_cbmc_Struct_Pointer1")
+}
+
+#[test]
+fn test_01_cbmc_function5() {
+    run_cbmc_regression_test("01_cbmc_Function5");
+}
+
+
+#[test]
+fn test_01_cbmc_function8() {
+    run_cbmc_regression_test("01_cbmc_Function8");
+}
+
+#[test]
+fn test_01_cbmc_function9() {
+    run_cbmc_regression_test("01_cbmc_Function9");
+}
+
+#[test]
+fn test_01_cbmc_gcc_conditional_expr1() {
+    run_cbmc_regression_test("01_cbmc_gcc_conditional_expr1");
+}
+
+#[test]
+fn test_01_cbmc_negation() {
+    run_cbmc_regression_test("01_cbmc_Negation");
+}
+
+#[test]
+fn test_01_cbmc_overflow_addition1() {
+    run_cbmc_regression_test("01_cbmc_Overflow_Addition1");
+}
+
+#[test]
+fn test_01_cbmc_while1() {
+    run_cbmc_regression_test_file("01_cbmc_while1.c", &["--unwind", "5"], 0);
+}
+
+// Broken tests (looks OK but don't run)
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_access2() {
+    run_cbmc_regression_test("01_cbmc_Array_Access2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_access3() {
+    run_cbmc_regression_test("01_cbmc_Array_Access3");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_abs1() {
+    run_cbmc_regression_test_file("01_cbmc_abs1.c", &["--goto-functions-only"], 0);
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_argc1() {
+    run_cbmc_regression_test("01_cbmc_argc1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_access1() {
+    run_cbmc_regression_test("01_cbmc_Array_Access1");
+}
+
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_enum1() {
+    run_cbmc_regression_test("01_cbmc_enum1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_enum2() {
+    run_cbmc_regression_test("01_cbmc_enum2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_enum3() {
+    run_cbmc_regression_test("01_cbmc_enum3");
+}
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_initialization2() {
+    run_cbmc_regression_test("01_cbmc_Array_Initialization2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_initialization3() {
+    run_cbmc_regression_test("01_cbmc_Array_Initialization3");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_pointer1() {
+    run_cbmc_regression_test("01_cbmc_Array_Pointer1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_pointer2() {
+    run_cbmc_regression_test("01_cbmc_Array_Pointer2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_array_pointer3() {
+    run_cbmc_regression_test("01_cbmc_Array_Pointer3");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_bitfields() {
+    run_cbmc_regression_test("01_cbmc_Bitfields");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_bool1() {
+    run_cbmc_regression_test("01_cbmc_Bool1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_boolean_guards1() {
+    run_cbmc_regression_test("01_cbmc_Boolean_Guards1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_character_handling1() {
+    run_cbmc_regression_test("01_cbmc_character_handling1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_end_thread1() {
+    run_cbmc_regression_test("01_cbmc_End_thread1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_error_label1() {
+    run_cbmc_regression_test("01_cbmc_error-label1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_exit1() {
+    run_cbmc_regression_test("01_cbmc_exit1");
+}
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_global_initialization() {
+    run_cbmc_regression_test("01_cbmc_Global_Initialization");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_multi_dimensional_array1() {
+    run_cbmc_regression_test("01_cbmc_Multi_Dimensional_Array1");
+}
+
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer2() {
+    run_cbmc_regression_test("01_cbmc_Pointer2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer5() {
+    run_cbmc_regression_test("01_cbmc_Pointer5");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer9() {
+    run_cbmc_regression_test("01_cbmc_Pointer9");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer11() {
+    run_cbmc_regression_test("01_cbmc_Pointer11");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer13() {
+    run_cbmc_regression_test("01_cbmc_Pointer13");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer16() {
+    run_cbmc_regression_test("01_cbmc_Pointer16");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer20() {
+    run_cbmc_regression_test("01_cbmc_Pointer20");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer24() {
+    run_cbmc_regression_test("01_cbmc_Pointer24");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer31() {
+    run_cbmc_regression_test("01_cbmc_Pointer31");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer32() {
+    run_cbmc_regression_test("01_cbmc_Pointer32");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_return2() {
+    run_cbmc_regression_test("01_cbmc_return2");
+}
+
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_sideeffects1() {
+    run_cbmc_regression_test("01_cbmc_Sideeffects1");
+}
+
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_statement_expression2() {
+    run_cbmc_regression_test("01_cbmc_Statement_Expression2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_string1() {
+    run_cbmc_regression_test("01_cbmc_String1");
+}
+
+#[test]
+fn test_01_cbmc_string2() {
+    run_cbmc_regression_test("01_cbmc_String2") 
+}
+
+#[test]
+fn test_01_cbmc_string3() {
+    run_cbmc_regression_test("01_cbmc_String3")
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_string4() {
+    run_cbmc_regression_test("01_cbmc_String4");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_struct_array1() {
+    run_cbmc_regression_test("01_cbmc_Struct_Array1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_struct_bytewise1() {
+    run_cbmc_regression_test("01_cbmc_Struct_Bytewise1");
+}
+
+#[test]
+fn test_01_cbmc_struct_bytewise2() {
+    run_cbmc_regression_test("01_cbmc_Struct_Bytewise2")
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_struct_bytewise3() {
+    run_cbmc_regression_test("01_cbmc_Struct_Bytewise3");
+}
+
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_struct_initialization2() {
+    run_cbmc_regression_test("01_cbmc_Struct_Initialization2");
+}
+
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_structs5() {
+    run_cbmc_regression_test("01_cbmc_Structs5");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_structs6() {
+    run_cbmc_regression_test("01_cbmc_Structs6");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_structs7() {
+    run_cbmc_regression_test("01_cbmc_Structs7");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_unbounded_array1() {
+    run_cbmc_regression_test("01_cbmc_Unbounded_Array1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_switch2() {
+    run_cbmc_regression_test("01_cbmc_switch2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_unsigned_char1() {
+    run_cbmc_regression_test("01_cbmc_unsigned_char1");
+}
+
+// Disabled due to needed linking
+
+#[ignore]
+#[test]
+fn test_01_cbmc_static_functions1() {
+    run_cbmc_regression_test("01_cbmc_Static_Functions1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_linking1() {
+    run_cbmc_regression_test("01_cbmc_Linking1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_linking2() {
+    run_cbmc_regression_test("01_cbmc_Linking2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_inline1() {
+    run_cbmc_regression_test("01_cbmc_inline1");
+}
+
+// Memory models
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free5() {
+    run_cbmc_regression_test("01_cbmc_Free5");
+}
+
+
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc1() {
+    run_cbmc_regression_test("01_cbmc_Malloc1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc2() {
+    run_cbmc_regression_test("01_cbmc_Malloc2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc3() {
+    run_cbmc_regression_test("01_cbmc_Malloc3");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc4() {
+    run_cbmc_regression_test("01_cbmc_Malloc4");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc5() {
+    run_cbmc_regression_test("01_cbmc_Malloc5");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc6() {
+    run_cbmc_regression_test("01_cbmc_Malloc6");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc7() {
+    run_cbmc_regression_test("01_cbmc_Malloc7");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc8() {
+    run_cbmc_regression_test("01_cbmc_Malloc8");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc9() {
+    run_cbmc_regression_test("01_cbmc_Malloc9");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc10() {
+    run_cbmc_regression_test("01_cbmc_Malloc10");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc11() {
+    run_cbmc_regression_test("01_cbmc_Malloc11");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc12() {
+    run_cbmc_regression_test("01_cbmc_Malloc12");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc13() {
+    run_cbmc_regression_test("01_cbmc_Malloc13");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc14() {
+    run_cbmc_regression_test("01_cbmc_Malloc14");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc15() {
+    run_cbmc_regression_test("01_cbmc_Malloc15");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc16() {
+    run_cbmc_regression_test("01_cbmc_Malloc16");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc17() {
+    run_cbmc_regression_test("01_cbmc_Malloc17");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc19() {
+    run_cbmc_regression_test("01_cbmc_Malloc19");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc20() {
+    run_cbmc_regression_test("01_cbmc_Malloc20");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc21() {
+    run_cbmc_regression_test("01_cbmc_Malloc21");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc22() {
+    run_cbmc_regression_test("01_cbmc_Malloc22");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc23() {
+    run_cbmc_regression_test("01_cbmc_Malloc23");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc24() {
+    run_cbmc_regression_test("01_cbmc_Malloc24");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc25() {
+    run_cbmc_regression_test("01_cbmc_Malloc25");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc27() {
+    run_cbmc_regression_test("01_cbmc_Malloc27");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_malloc28() {
+    run_cbmc_regression_test("01_cbmc_Malloc28");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free1() {
+    run_cbmc_regression_test("01_cbmc_Free1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free2() {
+    run_cbmc_regression_test("01_cbmc_Free2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free3() {
+    run_cbmc_regression_test("01_cbmc_Free3");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free4() {
+    run_cbmc_regression_test("01_cbmc_Free4");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free6() {
+    run_cbmc_regression_test("01_cbmc_Free6");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free7() {
+    run_cbmc_regression_test("01_cbmc_Free7");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_free8() {
+    run_cbmc_regression_test("01_cbmc_Free8");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_linked_list1() {
+    run_cbmc_regression_test("01_cbmc_Linked_List1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_linked_list2() {
+    run_cbmc_regression_test("01_cbmc_Linked_List2");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_function_pointer6() {
+    run_cbmc_regression_test("01_cbmc_Function_Pointer6");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_pointer25() {
+    run_cbmc_regression_test("01_cbmc_Pointer25");
+}
+
+
+// Static requires adapting the __CPROVER_initialize into ESBMC_main
 
 #[ignore]
 #[test]
@@ -936,6 +1604,9 @@ fn test_01_cbmc_string_abstraction10() {
     run_cbmc_regression_test("01_cbmc_String_Abstraction10");
 }
 
+
+// Need unions
+
 #[ignore]
 #[test]
 fn test_01_cbmc_union1() {
@@ -966,65 +1637,7 @@ fn test_01_cbmc_union5() {
     run_cbmc_regression_test("01_cbmc_union5");
 }
 
-#[ignore]
-#[test]
-fn test_01_cbmc_array_access2() {
-    run_cbmc_regression_test("01_cbmc_Array_Access2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_array_access3() {
-    run_cbmc_regression_test("01_cbmc_Array_Access3");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_recursion() {
-    run_cbmc_regression_test("01_cbmc_Recursion");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_recursion2() {
-    run_cbmc_regression_test("01_cbmc_Recursion2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_recursion3() {
-    run_cbmc_regression_test("01_cbmc_Recursion3");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer18() {
-    run_cbmc_regression_test("01_cbmc_Pointer18");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_abs1() {
-    run_cbmc_regression_test_file("01_cbmc_abs1.c", &["--goto-functions-only"], 0);
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_while1() {
-    run_cbmc_regression_test_file("01_cbmc_while1.c", &["--goto-functions-only"], 0);
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_argc1() {
-    run_cbmc_regression_test("01_cbmc_argc1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_array_access1() {
-    run_cbmc_regression_test("01_cbmc_Array_Access1");
-}
+// Needs fixedbv
 
 #[ignore]
 #[test]
@@ -1206,244 +1819,13 @@ fn test_01_cbmc_fixedbv28() {
     run_cbmc_regression_test("01_cbmc_Fixedbv28");
 }
 
-#[ignore]
-#[test]
-fn test_01_cbmc_enum1() {
-    run_cbmc_regression_test("01_cbmc_enum1");
-}
+// Stack overflow
+
 
 #[ignore]
 #[test]
-fn test_01_cbmc_enum2() {
-    run_cbmc_regression_test("01_cbmc_enum2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_enum3() {
-    run_cbmc_regression_test("01_cbmc_enum3");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_for4() {
-    run_cbmc_regression_test("01_cbmc_for4");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free1() {
-    run_cbmc_regression_test("01_cbmc_Free1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free2() {
-    run_cbmc_regression_test("01_cbmc_Free2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free3() {
-    run_cbmc_regression_test("01_cbmc_Free3");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free4() {
-    run_cbmc_regression_test("01_cbmc_Free4");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free6() {
-    run_cbmc_regression_test("01_cbmc_Free6");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free7() {
-    run_cbmc_regression_test("01_cbmc_Free7");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free8() {
-    run_cbmc_regression_test("01_cbmc_Free8");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_linked_list1() {
-    run_cbmc_regression_test("01_cbmc_Linked_List1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_linked_list2() {
-    run_cbmc_regression_test("01_cbmc_Linked_List2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc1() {
-    run_cbmc_regression_test("01_cbmc_Malloc1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc2() {
-    run_cbmc_regression_test("01_cbmc_Malloc2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc3() {
-    run_cbmc_regression_test("01_cbmc_Malloc3");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc4() {
-    run_cbmc_regression_test("01_cbmc_Malloc4");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc5() {
-    run_cbmc_regression_test("01_cbmc_Malloc5");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc6() {
-    run_cbmc_regression_test("01_cbmc_Malloc6");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc7() {
-    run_cbmc_regression_test("01_cbmc_Malloc7");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc8() {
-    run_cbmc_regression_test("01_cbmc_Malloc8");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc9() {
-    run_cbmc_regression_test("01_cbmc_Malloc9");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc10() {
-    run_cbmc_regression_test("01_cbmc_Malloc10");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc11() {
-    run_cbmc_regression_test("01_cbmc_Malloc11");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc12() {
-    run_cbmc_regression_test("01_cbmc_Malloc12");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc13() {
-    run_cbmc_regression_test("01_cbmc_Malloc13");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc14() {
-    run_cbmc_regression_test("01_cbmc_Malloc14");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc15() {
-    run_cbmc_regression_test("01_cbmc_Malloc15");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc16() {
-    run_cbmc_regression_test("01_cbmc_Malloc16");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc17() {
-    run_cbmc_regression_test("01_cbmc_Malloc17");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc19() {
-    run_cbmc_regression_test("01_cbmc_Malloc19");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc20() {
-    run_cbmc_regression_test("01_cbmc_Malloc20");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc21() {
-    run_cbmc_regression_test("01_cbmc_Malloc21");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc22() {
-    run_cbmc_regression_test("01_cbmc_Malloc22");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc23() {
-    run_cbmc_regression_test("01_cbmc_Malloc23");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc24() {
-    run_cbmc_regression_test("01_cbmc_Malloc24");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc25() {
-    run_cbmc_regression_test("01_cbmc_Malloc25");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc27() {
-    run_cbmc_regression_test("01_cbmc_Malloc27");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_malloc28() {
-    run_cbmc_regression_test("01_cbmc_Malloc28");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer25() {
-    run_cbmc_regression_test("01_cbmc_Pointer25");
+fn test_01_cbmc_pointer8() {
+    run_cbmc_regression_test("01_cbmc_Pointer8");
 }
 
 #[ignore]
@@ -1454,110 +1836,16 @@ fn test_01_cbmc_pointer26() {
 
 #[ignore]
 #[test]
-fn test_01_cbmc_function_pointer8() {
-    run_cbmc_regression_test("01_cbmc_Function_Pointer8");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer8() {
-    run_cbmc_regression_test("01_cbmc_Pointer8");
-}
-
-#[ignore]
-#[test]
 fn test_01_cbmc_structs4() {
     run_cbmc_regression_test("01_cbmc_Structs4");
 }
 
-#[ignore]
-#[test]
-fn test_01_cbmc_array_initialization2() {
-    run_cbmc_regression_test("01_cbmc_Array_Initialization2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_array_initialization3() {
-    run_cbmc_regression_test("01_cbmc_Array_Initialization3");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_array_pointer1() {
-    run_cbmc_regression_test("01_cbmc_Array_Pointer1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_array_pointer2() {
-    run_cbmc_regression_test("01_cbmc_Array_Pointer2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_array_pointer3() {
-    run_cbmc_regression_test("01_cbmc_Array_Pointer3");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_bitfields() {
-    run_cbmc_regression_test("01_cbmc_Bitfields");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_bool1() {
-    run_cbmc_regression_test("01_cbmc_Bool1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_boolean_guards1() {
-    run_cbmc_regression_test("01_cbmc_Boolean_Guards1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_bv_arithmetic2() {
-    run_cbmc_regression_test("01_cbmc_BV_Arithmetic2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_bv_arithmetic4() {
-    run_cbmc_regression_test("01_cbmc_BV_Arithmetic4");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_character_handling1() {
-    run_cbmc_regression_test("01_cbmc_character_handling1");
-}
+// Needs more from the test infrastructure
 
 #[ignore]
 #[test]
 fn test_01_cbmc_defines1() {
     run_cbmc_regression_test("01_cbmc_Defines1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_end_thread1() {
-    run_cbmc_regression_test("01_cbmc_End_thread1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_error_label1() {
-    run_cbmc_regression_test("01_cbmc_error-label1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_exit1() {
-    run_cbmc_regression_test("01_cbmc_exit1");
 }
 
 #[ignore]
@@ -1570,286 +1858,4 @@ fn test_01_cbmc_externfixedbv1() {
 #[test]
 fn test_01_cbmc_function_option1() {
     run_cbmc_regression_test("01_cbmc_function_option1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_function_pointer2() {
-    run_cbmc_regression_test("01_cbmc_Function_Pointer2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_function_pointer6() {
-    run_cbmc_regression_test("01_cbmc_Function_Pointer6");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_function_pointer7() {
-    run_cbmc_regression_test("01_cbmc_Function_Pointer7");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_function5() {
-    run_cbmc_regression_test("01_cbmc_Function5");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_function8() {
-    run_cbmc_regression_test("01_cbmc_Function8");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_function9() {
-    run_cbmc_regression_test("01_cbmc_Function9");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_gcc_conditional_expr1() {
-    run_cbmc_regression_test("01_cbmc_gcc_conditional_expr1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_global_initialization() {
-    run_cbmc_regression_test("01_cbmc_Global_Initialization");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_multi_dimensional_array1() {
-    run_cbmc_regression_test("01_cbmc_Multi_Dimensional_Array1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_negation() {
-    run_cbmc_regression_test("01_cbmc_Negation");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_overflow_addition1() {
-    run_cbmc_regression_test("01_cbmc_Overflow_Addition1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer2() {
-    run_cbmc_regression_test("01_cbmc_Pointer2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer5() {
-    run_cbmc_regression_test("01_cbmc_Pointer5");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer9() {
-    run_cbmc_regression_test("01_cbmc_Pointer9");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer11() {
-    run_cbmc_regression_test("01_cbmc_Pointer11");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer13() {
-    run_cbmc_regression_test("01_cbmc_Pointer13");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer16() {
-    run_cbmc_regression_test("01_cbmc_Pointer16");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer20() {
-    run_cbmc_regression_test("01_cbmc_Pointer20");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer24() {
-    run_cbmc_regression_test("01_cbmc_Pointer24");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer31() {
-    run_cbmc_regression_test("01_cbmc_Pointer31");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_pointer32() {
-    run_cbmc_regression_test("01_cbmc_Pointer32");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_return2() {
-    run_cbmc_regression_test("01_cbmc_return2");
-}
-
-
-
-#[ignore]
-#[test]
-fn test_01_cbmc_sideeffects1() {
-    run_cbmc_regression_test("01_cbmc_Sideeffects1");
-}
-
-
-
-#[ignore]
-#[test]
-fn test_01_cbmc_statement_expression2() {
-    run_cbmc_regression_test("01_cbmc_Statement_Expression2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_string1() {
-    run_cbmc_regression_test("01_cbmc_String1");
-}
-
-#[test]
-fn test_01_cbmc_string2() {
-    run_cbmc_regression_test("01_cbmc_String2") 
-}
-
-#[test]
-fn test_01_cbmc_string3() {
-    run_cbmc_regression_test("01_cbmc_String3")
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_string4() {
-    run_cbmc_regression_test("01_cbmc_String4");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_struct_array1() {
-    run_cbmc_regression_test("01_cbmc_Struct_Array1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_struct_bytewise1() {
-    run_cbmc_regression_test("01_cbmc_Struct_Bytewise1");
-}
-
-#[test]
-fn test_01_cbmc_struct_bytewise2() {
-    run_cbmc_regression_test("01_cbmc_Struct_Bytewise2")
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_struct_bytewise3() {
-    run_cbmc_regression_test("01_cbmc_Struct_Bytewise3");
-}
-
-#[test]
-fn test_01_cbmc_struct_hierarchy1() {
-    run_cbmc_regression_test("01_cbmc_Struct_Hierarchy1")
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_struct_initialization2() {
-    run_cbmc_regression_test("01_cbmc_Struct_Initialization2");
-}
-
-#[test]
-fn test_01_cbmc_struct_initialization3() {
-    run_cbmc_regression_test("01_cbmc_Struct_Initialization3")
-}
-
-#[test]
-fn test_01_cbmc_struct_pointer1() {
-    run_cbmc_regression_test("01_cbmc_Struct_Pointer1")
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_structs5() {
-    run_cbmc_regression_test("01_cbmc_Structs5");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_structs6() {
-    run_cbmc_regression_test("01_cbmc_Structs6");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_structs7() {
-    run_cbmc_regression_test("01_cbmc_Structs7");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_unbounded_array1() {
-    run_cbmc_regression_test("01_cbmc_Unbounded_Array1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_switch2() {
-    run_cbmc_regression_test("01_cbmc_switch2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_unsigned_char1() {
-    run_cbmc_regression_test("01_cbmc_unsigned_char1");
-}
-
-// Disabled due to needed linking
-
-#[ignore]
-#[test]
-fn test_01_cbmc_static_functions1() {
-    run_cbmc_regression_test("01_cbmc_Static_Functions1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_linking1() {
-    run_cbmc_regression_test("01_cbmc_Linking1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_linking2() {
-    run_cbmc_regression_test("01_cbmc_Linking2");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_inline1() {
-    run_cbmc_regression_test("01_cbmc_inline1");
-}
-
-#[ignore]
-#[test]
-fn test_01_cbmc_free5() {
-    run_cbmc_regression_test("01_cbmc_Free5");
 }

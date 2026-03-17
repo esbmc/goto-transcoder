@@ -1,10 +1,12 @@
-int global;
-
+#include <assert.h>
+#include <stdio.h>
 typedef struct {
   int i;
 } xt;
 
 xt x;
+int global;
+
 
 void f(xt i)
 {
@@ -22,10 +24,10 @@ int main()
   _Bool c;
   
   p=c?f:g;
-  
+
   x.i=2;
 
   p(x);
-  
-  assert(global==c);
+  printf("value of c is %d", c);
+  assert(global== (c?1:0));
 }

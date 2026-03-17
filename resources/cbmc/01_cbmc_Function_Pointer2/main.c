@@ -19,5 +19,5 @@ int main()
   
   p(1);
   
-  assert(global==c);
+  assert(global==(c?1:0));
 }
