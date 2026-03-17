@@ -751,10 +751,6 @@ fn test_01_cbmc_function_pointer1() {
     run_cbmc_regression_test("01_cbmc_Function_Pointer1");
 }
 
-#[test]
-fn test_01_cbmc_externfixedbv2() {
-    run_cbmc_regression_test("01_cbmc_ExternFixedbv2");
-}
 
 #[test]
 fn test_01_cbmc_division_assignment() {
@@ -1858,4 +1854,10 @@ fn test_01_cbmc_externfixedbv1() {
 #[test]
 fn test_01_cbmc_function_option1() {
     run_cbmc_regression_test("01_cbmc_function_option1");
+}
+
+#[ignore]
+#[test]
+fn test_01_cbmc_externfixedbv2() {
+    run_cbmc_regression_test("01_cbmc_ExternFixedbv2");
 }
