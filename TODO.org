@@ -127,17 +127,47 @@ Get the same level of support than JBMC. Or update this with correct expectation
 :END:
 The contract _RNvNtNtCse4K9yuySQJR_4core3num6verify15widening_mul_u8.out is currently crashing in ESBMC due to the unsupported union.
 
-
-* V0.3 Roadmap
 ** TODO [#A] Full support for CBMC regression                       :feature:
 :PROPERTIES:
 :CUSTOM_ID: 5
 :CREATED: [2026-02-24 Tue]
 :END:
-v0.1 goal: full support for the CBMC regression suite in ~ESBMC/regression/cbmc~. The CBMC → ESBMC conversion should yield the same verification verdict as invoking ESBMC directly on the same program.
+full support for the CBMC regression suite in ~ESBMC/regression/cbmc~. The CBMC → ESBMC conversion should yield the same verification verdict as invoking ESBMC directly on the same program.
+
+* V0.9 Roadmap
+
+
+
+** TODO Support for fixedbv
+
+* V0.3 Roadmap
+
+** TODO [#C] Support for CPROVER initialization
+** TODO [#C] Support CPROVER intrinsics                            :feature:
+
+Goto binary gets lost if intrinsic functions are invoked. They are expected to be removed directly from the frontends.
+
+** TODO Link ESBMC OMs
+
+ESBMC OMs contain all the C functions that are used. We need to link those to get support for features suchs as dynamic memory and strings
+
 
 * V0.2 Roadmap
-** DONE [#C] Move tests into tests/                                :refactor:
+
+
+
+** TODO Support for unions
+** TODO Support for _Bool convertion
+For some reason the typecast might me missing
+
+#+BEGIN_SRC c
+_Bool c;
+assert(c == 0 || c == 1);
+#+END_SRC
+
+
+** TODO some tests are causing stack overflows
+** DONE [#C] Move tests into tests/                               :refactor:
 CLOSED: [2026-03-16 Mon 09:53]
 :PROPERTIES:
 :CUSTOM_ID: 4

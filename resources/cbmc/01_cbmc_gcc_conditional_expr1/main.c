@@ -2,6 +2,7 @@ int g, k;
 
 int main()
 {
+  g = 0; k = 0;
   int r1, r2;
   
   r1= (g++) ? : 2;

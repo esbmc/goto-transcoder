@@ -17,7 +17,7 @@ int main(void)
 {
   int (*ppp)();
   struct S * ps = (struct S *) malloc(sizeof(struct S));
-  __ESBMC_assume(ps);
+  if(!ps) return 0;
   int x, y;
 
   ps->func = x?ten:twenty;

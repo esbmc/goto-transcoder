@@ -5,7 +5,6 @@ void cmp_str(char* s1, char* s2, int n) {
     s2++;
     n--;
   }
-
   assert ((n <= 0) || (*s1 != *s2));
 }
 

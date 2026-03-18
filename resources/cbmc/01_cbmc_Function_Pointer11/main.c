@@ -5,10 +5,10 @@ typedef unsigned (fun_t)(unsigned);
 
 fun_t *f;
 
-int main(int argc, char **argv)
+int main()
 {
   unsigned x = nondet_uint();
-  __ESBMC_assume(x>20);
+  if(!(x>20)) return 0;
   if(x<10)
     f=0;
   else

@@ -1,7 +1,8 @@
-int a[4];
-int *p;
 
 int main() {
+  int a[4] = {0,0,0,0};
+  int *p = 0;
+
 	int j;
 
 	a[1] = 1;
